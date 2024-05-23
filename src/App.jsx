@@ -2,7 +2,7 @@ import { useState } from "react";
 import SecondMenu from "./Components/SecondMenu";
 import ThirdMenu from "./Components/ThirdMenu";
 import DisplayBoard from "./Components/DisplayBoard";
-import { menuItems, displayTables } from "./Data/dataItems";
+import { menuItems } from "./Data/dataItems";
 import "./App.css";
 
 function App() {
@@ -25,11 +25,12 @@ function App() {
       setDisplay(menuItems.PORTFOLIO_ANALYSIS);
     }
   }
+
   return (
-    <div className="flex flex-col align-middle justify-center mx-auto my-auto max-w-screen-lg">
-      <SecondMenu id={displayTables[display]} click={clickhandler} />
+    <div className="flex flex-col align-middle justify-center mx-auto my-auto max-w-6xl">
+      <SecondMenu activeMenu={display} click={clickhandler} />
       <ThirdMenu />
-      <DisplayBoard id={displayTables[display]} />
+      <DisplayBoard activeMenu={display} />
     </div>
   );
 }
