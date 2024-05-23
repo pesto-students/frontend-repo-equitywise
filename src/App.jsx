@@ -27,7 +27,7 @@ function App() {
   }
   return (
     <div className="flex flex-col align-middle justify-center mx-auto my-auto max-w-screen-lg">
-      <SecondMenu click={clickhandler} />
+      <SecondMenu id={displayTables[display]} click={clickhandler} />
       <ThirdMenu />
       <DisplayBoard id={displayTables[display]} />
     </div>

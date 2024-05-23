@@ -2,8 +2,6 @@ import PortfolioHeader from "./My Portfolio/PortfolioHeader";
 import PortfolioFooter from "./My Portfolio/PortfolioFooter";
 import PortfolioItem from "./My Portfolio/PortfolioItem";
 
-
-
 const DisplayBoard = ({ id }) => {
   let len = id.length;
   let firstDivWidth = `basis-2/${len} min-w-48`;
