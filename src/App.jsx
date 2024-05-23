@@ -1,10 +1,7 @@
 import { useState } from "react";
 import SecondMenu from "./Components/SecondMenu";
 import ThirdMenu from "./Components/ThirdMenu";
-// import PortfolioHeader from "./Components/My Portfolio/PortfolioHeader";
-// import PortfolioItem from "./Components/My Portfolio/PortfolioItem";
-// import PortfolioFooter from "./Components/My Portfolio/PortfolioFooter";
-import DisplayBoard from "./Components/DisplayBoard/DisplayBoard";
+import DisplayBoard from "./Components/DisplayBoard";
 import { menuItems, displayTables } from "./Data/dataItems";
 import "./App.css";
 
@@ -29,14 +26,11 @@ function App() {
     }
   }
   return (
-    <>
+    <div className="flex flex-col align-middle justify-center mx-auto my-auto max-w-screen-lg">
       <SecondMenu click={clickhandler} />
       <ThirdMenu />
-      {/* <PortfolioHeader />
-      <PortfolioItem />
-      <PortfolioFooter /> */}
       <DisplayBoard id={displayTables[display]} />
-    </>
+    </div>
   );
 }
 

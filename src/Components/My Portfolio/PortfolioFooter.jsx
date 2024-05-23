@@ -1,14 +1,14 @@
-const PortfolioFooter = ({ noOfSharesTotal, dailyGainTotal, overallGainTotal, portfolioValueTotal }) => {
+const PortfolioFooter = ({ id, firstDivWidth, otherDivWidth }) => {
   return (
-    <div className="w-8xl h-10 bg-slate-300 flex flex-row justify-evenly content-center items-center roboto-medium ">
-      <div className="basis-3/8 roboto-medium text-sm border">Total Portfolio</div>
-      <div className="basis-1/8 roboto-medium text-sm"></div>
-      <div className="basis-1/8 roboto-medium text-sm">{noOfSharesTotal}</div>
-      <div className="basis-1/8 roboto-medium text-sm">{}</div>
-      <div className="basis-1/8 roboto-medium text-sm">{}</div>
-      <div className="basis-1/8 roboto-medium text-sm">{dailyGainTotal}</div>
-      <div className="basis-1/8 roboto-medium text-sm">{overallGainTotal}</div>
-      <div className="basis-1/8 roboto-medium text-sm">{portfolioValueTotal}</div>
+    <div className="w-8xl h-10 bg-slate-300 flex flex-row justify-evenly items-center roboto-medium ">
+      {id.map((item) => {
+        let index = id.indexOf(item);
+        return (
+          <div key={item.index} className={`${index === 0 ? firstDivWidth : otherDivWidth} roboto-medium text-sm`}>
+            {1000}
+          </div>
+        );
+      })}
     </div>
   );
 };
