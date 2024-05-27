@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
+import SecondMenu from '../components/SubMenu/SecondMenu';
+
 
 const MyWishlist = () => {
   const [wishlist, setWishlist] = useState([
@@ -14,6 +16,8 @@ const MyWishlist = () => {
       <Header />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">My Wishlist</h1>
+        <SecondMenu />
+
         <table className="min-w-full bg-white">
           <thead>
             <tr>
