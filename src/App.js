@@ -6,12 +6,12 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import MyPortfolio from './pages/MyPortfolio';
 import MyWishlist from './pages/MyWishlist';
-import AboutUs from './pages/FooterPages/AboutUs';
-import Careers from './pages/FooterPages/Careers';
-import InvestorRelations from './pages/FooterPages/InvestorRelations';
-import SecurityInformation from './pages/FooterPages/SecurityInformation';
-import ContactUs from './pages/FooterPages/ContactUs';
-import FAQ from './pages/FooterPages/FAQ';
+import AboutUs from './pages/footerpages/AboutUs';
+import Careers from './pages/footerpages/Careers';
+import InvestorRelations from './pages/footerpages/InvestorRelations';
+import SecurityInformation from './pages/footerpages/SecurityInformation';
+import ContactUs from './pages/footerpages/ContactUs';
+import FAQ from './pages/footerpages/FAQ';
 // import PrivateRoute from './components/PrivateRoute'; // Comment out this import if not using it
 
 function App() {
@@ -59,12 +59,12 @@ export default App;
 //import Login from './pages/Login';
 //import MyPortfolio from './pages/MyPortfolio';
 //import MyWishlist from './pages/MyWishlist';
-//import AboutUs from './pages/FooterPages/AboutUs';
-//import Careers from './pages/FooterPages/Careers';
-//import InvestorRelations from './pages/FooterPages/InvestorRelations';
-//import SecurityInformation from './pages/FooterPages/SecurityInformation';
-//import ContactUs from './pages/FooterPages/ContactUs';
-//import FAQ from './pages/FooterPages/FAQ';
+//import AboutUs from './pages/footerpages/AboutUs';
+//import Careers from './pages/footerpages/Careers';
+//import InvestorRelations from './pages/footerpages/InvestorRelations';
+//import SecurityInformation from './pages/footerpages/SecurityInformation';
+//import ContactUs from './pages/footerpages/ContactUs';
+//import FAQ from './pages/footerpages/FAQ';
 //import PrivateRoute from './components/PrivateRoute';
 
 //function App() {

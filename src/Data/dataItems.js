@@ -1,11 +1,19 @@
-let menuItems = {
+// Define menu items for the portfolio
+let menuItemsPortfolio = {
   MY_PORTFOLIO: "My Portfolio",
   INTRADAY_POSITIONS: "Intraday Positions",
   STOCK_FUNDAMENTALS: "Stock Fundamentals",
-  MY_WISHLIST: "My Wishlist",
   PORTFOLIO_ANALYSIS: "Portfolio Analytics",
 };
 
+// Define menu items for the wishlist
+let menuItemsWishlist = {
+  MY_WISHLIST: "My Wishlist",
+  INTRADAY_POSITIONS: "Intraday Positions",
+  STOCK_FUNDAMENTALS: "Stock Fundamentals",
+};
+
+// Define stock attributes
 let stockAttributes = {
   STOCK_NAME: "Stock Name",
   SYMBOL: "Symbol",
@@ -28,98 +36,207 @@ let stockAttributes = {
   DIV_DATE: "Div/Date",
 };
 
-let displayTables = {
-  [menuItems.MY_PORTFOLIO]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.NO_OF_SHARES, stockAttributes.AVG_COST, stockAttributes.MARKET_PRICE, stockAttributes.DAILY_GAIN, stockAttributes.OVERALL_GAIN, stockAttributes.PORTFOLIO_VALUE],
-  [menuItems.INTRADAY_POSITIONS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.CHANGE, stockAttributes.CHANGE_PERCENTAGE, stockAttributes.DAY_HIGH, stockAttributes.DAY_LOW, stockAttributes.FIFTY_TWO_WEEK_HIGH, stockAttributes.FIFTY_TWO_WEEK_LOW],
-  [menuItems.STOCK_FUNDAMENTALS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.EPS, stockAttributes.FORWARD_PE, stockAttributes.DIV_PER_SHARE, stockAttributes.DIV_DATE],
-  [menuItems.MY_WISHLIST]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.EPS, stockAttributes.FORWARD_PE, stockAttributes.DIV_PER_SHARE, stockAttributes.DAY_HIGH, stockAttributes.DAY_LOW, stockAttributes.DIV_DATE],
+// Define display tables for the portfolio
+let displayTablesPortfolio = {
+  [menuItemsPortfolio.MY_PORTFOLIO]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.NO_OF_SHARES,
+    stockAttributes.AVG_COST,
+    stockAttributes.MARKET_PRICE,
+    stockAttributes.DAILY_GAIN,
+    stockAttributes.OVERALL_GAIN,
+    stockAttributes.PORTFOLIO_VALUE,
+  ],
+  [menuItemsPortfolio.INTRADAY_POSITIONS]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.LAST_PRICE,
+    stockAttributes.CHANGE,
+    stockAttributes.CHANGE_PERCENTAGE,
+    stockAttributes.DAY_HIGH,
+    stockAttributes.DAY_LOW,
+    stockAttributes.FIFTY_TWO_WEEK_HIGH,
+    stockAttributes.FIFTY_TWO_WEEK_LOW,
+  ],
+  [menuItemsPortfolio.STOCK_FUNDAMENTALS]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.LAST_PRICE,
+    stockAttributes.EPS,
+    stockAttributes.FORWARD_PE,
+    stockAttributes.DIV_PER_SHARE,
+    stockAttributes.DIV_DATE,
+  ],
 };
 
+// Define display tables for the wishlist
+let displayTablesWishlist = {
+  [menuItemsWishlist.MY_WISHLIST]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.NO_OF_SHARES,
+    stockAttributes.AVG_COST,
+    stockAttributes.MARKET_PRICE,
+    stockAttributes.DAILY_GAIN,
+    stockAttributes.OVERALL_GAIN,
+    stockAttributes.PORTFOLIO_VALUE,
+  ],
+  [menuItemsWishlist.INTRADAY_POSITIONS]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.LAST_PRICE,
+    stockAttributes.CHANGE,
+    stockAttributes.CHANGE_PERCENTAGE,
+    stockAttributes.DAY_HIGH,
+    stockAttributes.DAY_LOW,
+    stockAttributes.FIFTY_TWO_WEEK_HIGH,
+    stockAttributes.FIFTY_TWO_WEEK_LOW,
+  ],
+  [menuItemsWishlist.STOCK_FUNDAMENTALS]: [
+    stockAttributes.STOCK_NAME,
+    stockAttributes.SYMBOL,
+    stockAttributes.LAST_PRICE,
+    stockAttributes.EPS,
+    stockAttributes.FORWARD_PE,
+    stockAttributes.DIV_PER_SHARE,
+    stockAttributes.DIV_DATE,
+  ],
+};
+
+// Function to calculate Overall Gain and Portfolio Value
+function calculateStockValues(stocks) {
+  return stocks.map(stock => {
+    stock[stockAttributes.OVERALL_GAIN] = (stock[stockAttributes.MARKET_PRICE] - stock[stockAttributes.AVG_COST]) * stock[stockAttributes.NO_OF_SHARES];
+    stock[stockAttributes.PORTFOLIO_VALUE] = stock[stockAttributes.MARKET_PRICE] * stock[stockAttributes.NO_OF_SHARES];
+    return stock;
+  });
+}
+
+// Define initial portfolio stocks
 let portfolioStocks = [
   {
-      [stockAttributes.STOCK_NAME]: "Tata Motors",
-      [stockAttributes.SYMBOL]: "TMR",
-      [stockAttributes.NO_OF_SHARES]: 500,
-      [stockAttributes.AVG_COST]: 20000,
-      [stockAttributes.MARKET_PRICE]: 220000,
-      [stockAttributes.DAILY_GAIN]: 500,
-      [stockAttributes.OVERALL_GAIN]: 6000,
-      [stockAttributes.PORTFOLIO_VALUE]: 200000,
-      [stockAttributes.LAST_PRICE]: 550,
-      [stockAttributes.CHANGE]: 2,
-      [stockAttributes.CHANGE_PERCENTAGE]: 25,
-      [stockAttributes.DAY_HIGH]: 5500,
-      [stockAttributes.DAY_LOW]: 2200,
-      [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
-      [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
-      [stockAttributes.EPS]: 5,
-      [stockAttributes.FORWARD_PE]: 22,
-      [stockAttributes.DIV_PER_SHARE]: 32,
-      [stockAttributes.DIV_DATE]: "22-May-2024",
+    [stockAttributes.STOCK_NAME]: "Tata Motors",
+    [stockAttributes.SYMBOL]: "TMR",
+    [stockAttributes.NO_OF_SHARES]: 500,
+    [stockAttributes.AVG_COST]: 20000,
+    [stockAttributes.MARKET_PRICE]: 220000,
+    [stockAttributes.DAILY_GAIN]: 500,
+    [stockAttributes.OVERALL_GAIN]: 0, // This will be calculated
+    [stockAttributes.PORTFOLIO_VALUE]: 0, // This will be calculated
+    [stockAttributes.LAST_PRICE]: 550,
+    [stockAttributes.CHANGE]: 2,
+    [stockAttributes.CHANGE_PERCENTAGE]: 25,
+    [stockAttributes.DAY_HIGH]: 5500,
+    [stockAttributes.DAY_LOW]: 2200,
+    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
+    [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
+    [stockAttributes.EPS]: 5,
+    [stockAttributes.FORWARD_PE]: 22,
+    [stockAttributes.DIV_PER_SHARE]: 32,
+    [stockAttributes.DIV_DATE]: "22-May-2024",
   },
   {
-      [stockAttributes.STOCK_NAME]: "ICICI Bank",
-      [stockAttributes.SYMBOL]: "ICB",
-      [stockAttributes.NO_OF_SHARES]: 500,
-      [stockAttributes.AVG_COST]: 20000,
-      [stockAttributes.MARKET_PRICE]: 220000,
-      [stockAttributes.DAILY_GAIN]: 500,
-      [stockAttributes.OVERALL_GAIN]: 6000,
-      [stockAttributes.PORTFOLIO_VALUE]: 200000,
-      [stockAttributes.LAST_PRICE]: 550,
-      [stockAttributes.CHANGE]: 2,
-      [stockAttributes.CHANGE_PERCENTAGE]: 25,
-      [stockAttributes.DAY_HIGH]: 5500,
-      [stockAttributes.DAY_LOW]: 2200,
-      [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
-      [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
-      [stockAttributes.EPS]: 5,
-      [stockAttributes.FORWARD_PE]: 22,
-      [stockAttributes.DIV_PER_SHARE]: 32,
-      [stockAttributes.DIV_DATE]: "22-May-2024",
+    [stockAttributes.STOCK_NAME]: "ICICI Bank",
+    [stockAttributes.SYMBOL]: "ICB",
+    [stockAttributes.NO_OF_SHARES]: 500,
+    [stockAttributes.AVG_COST]: 20000,
+    [stockAttributes.MARKET_PRICE]: 220000,
+    [stockAttributes.DAILY_GAIN]: 500,
+    [stockAttributes.OVERALL_GAIN]: 0, // This will be calculated
+    [stockAttributes.PORTFOLIO_VALUE]: 0, // This will be calculated
+    [stockAttributes.LAST_PRICE]: 550,
+    [stockAttributes.CHANGE]: 2,
+    [stockAttributes.CHANGE_PERCENTAGE]: 25,
+    [stockAttributes.DAY_HIGH]: 5500,
+    [stockAttributes.DAY_LOW]: 2200,
+    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
+    [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
+    [stockAttributes.EPS]: 5,
+    [stockAttributes.FORWARD_PE]: 22,
+    [stockAttributes.DIV_PER_SHARE]: 32,
+    [stockAttributes.DIV_DATE]: "22-May-2024",
   },
   {
-      [stockAttributes.STOCK_NAME]: "HDFC Bank",
-      [stockAttributes.SYMBOL]: "HDB",
-      [stockAttributes.NO_OF_SHARES]: 500,
-      [stockAttributes.AVG_COST]: 20000,
-      [stockAttributes.MARKET_PRICE]: 220000,
-      [stockAttributes.DAILY_GAIN]: 500,
-      [stockAttributes.OVERALL_GAIN]: 6000,
-      [stockAttributes.PORTFOLIO_VALUE]: 200000,
-      [stockAttributes.LAST_PRICE]: 550,
-      [stockAttributes.CHANGE]: 2,
-      [stockAttributes.CHANGE_PERCENTAGE]: 25,
-      [stockAttributes.DAY_HIGH]: 5500,
-      [stockAttributes.DAY_LOW]: 2200,
-      [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
-      [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
-      [stockAttributes.EPS]: 5,
-      [stockAttributes.FORWARD_PE]: 22,
-      [stockAttributes.DIV_PER_SHARE]: 32,
-      [stockAttributes.DIV_DATE]: "22-May-2024",
+    [stockAttributes.STOCK_NAME]: "HDFC Bank",
+    [stockAttributes.SYMBOL]: "HDB",
+    [stockAttributes.NO_OF_SHARES]: 500,
+    [stockAttributes.AVG_COST]: 20000,
+    [stockAttributes.MARKET_PRICE]: 220000,
+    [stockAttributes.DAILY_GAIN]: 500,
+    [stockAttributes.OVERALL_GAIN]: 0, // This will be calculated
+    [stockAttributes.PORTFOLIO_VALUE]: 0, // This will be calculated
+    [stockAttributes.LAST_PRICE]: 550,
+    [stockAttributes.CHANGE]: 2,
+    [stockAttributes.CHANGE_PERCENTAGE]: 25,
+    [stockAttributes.DAY_HIGH]: 5500,
+    [stockAttributes.DAY_LOW]: 2200,
+    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
+    [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
+    [stockAttributes.EPS]: 5,
+    [stockAttributes.FORWARD_PE]: 22,
+    [stockAttributes.DIV_PER_SHARE]: 32,
+    [stockAttributes.DIV_DATE]: "22-May-2024",
   },
   {
-      [stockAttributes.STOCK_NAME]: "Union Bank",
-      [stockAttributes.SYMBOL]: "UNB",
-      [stockAttributes.NO_OF_SHARES]: 500,
-      [stockAttributes.AVG_COST]: 20000,
-      [stockAttributes.MARKET_PRICE]: 220000,
-      [stockAttributes.DAILY_GAIN]: 500,
-      [stockAttributes.OVERALL_GAIN]: 6000,
-      [stockAttributes.PORTFOLIO_VALUE]: 200000,
-      [stockAttributes.LAST_PRICE]: 550,
-      [stockAttributes.CHANGE]: 2,
-      [stockAttributes.CHANGE_PERCENTAGE]: 25,
-      [stockAttributes.DAY_HIGH]: 5500,
-      [stockAttributes.DAY_LOW]: 2200,
-      [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
-      [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
-      [stockAttributes.EPS]: 5,
-      [stockAttributes.FORWARD_PE]: 22,
-      [stockAttributes.DIV_PER_SHARE]: 32,
-      [stockAttributes.DIV_DATE]: "22-May-2024",
+    [stockAttributes.STOCK_NAME]: "Union Bank",
+    [stockAttributes.SYMBOL]: "UNB",
+    [stockAttributes.NO_OF_SHARES]: 500,
+    [stockAttributes.AVG_COST]: 20000,
+    [stockAttributes.MARKET_PRICE]: 220000,
+    [stockAttributes.DAILY_GAIN]: 500,
+    [stockAttributes.OVERALL_GAIN]: 0, // This will be calculated
+    [stockAttributes.PORTFOLIO_VALUE]: 0, // This will be calculated
+    [stockAttributes.LAST_PRICE]: 550,
+    [stockAttributes.CHANGE]: 2,
+    [stockAttributes.CHANGE_PERCENTAGE]: 25,
+    [stockAttributes.DAY_HIGH]: 5500,
+    [stockAttributes.DAY_LOW]: 2200,
+    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
+    [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
+    [stockAttributes.EPS]: 5,
+    [stockAttributes.FORWARD_PE]: 22,
+    [stockAttributes.DIV_PER_SHARE]: 32,
+    [stockAttributes.DIV_DATE]: "22-May-2024",
   },
 ];
 
-export { menuItems, stockAttributes, displayTables, portfolioStocks };
+// Define initial wishlist stocks
+let wishlistStocks = [
+  {
+    [stockAttributes.STOCK_NAME]: "Mahindra Motors",
+    [stockAttributes.SYMBOL]: "MM",
+    [stockAttributes.NO_OF_SHARES]: 400,
+    [stockAttributes.AVG_COST]: 10000,
+    [stockAttributes.MARKET_PRICE]: 110000,
+    [stockAttributes.DAILY_GAIN]: 300,
+    [stockAttributes.OVERALL_GAIN]: 0, // This will be calculated
+    [stockAttributes.PORTFOLIO_VALUE]: 0, // This will be calculated
+    [stockAttributes.LAST_PRICE]: 550,
+    [stockAttributes.CHANGE]: 2,
+    [stockAttributes.CHANGE_PERCENTAGE]: 25,
+    [stockAttributes.DAY_HIGH]: 5500,
+    [stockAttributes.DAY_LOW]: 2200,
+    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 7000,
+    [stockAttributes.FIFTY_TWO_WEEK_LOW]: 2000,
+    [stockAttributes.EPS]: 5,
+    [stockAttributes.FORWARD_PE]: 22,
+    [stockAttributes.DIV_PER_SHARE]: 32,
+    [stockAttributes.DIV_DATE]: "22-May-2024",
+  },
+  // Add other wishlist stocks here
+];
+
+// Calculate Overall Gain and Portfolio Value for portfolio and wishlist stocks
+portfolioStocks = calculateStockValues(portfolioStocks);
+wishlistStocks = calculateStockValues(wishlistStocks);
+
+export {
+  menuItemsPortfolio,
+  menuItemsWishlist,
+  stockAttributes,
+  displayTablesPortfolio,
+  displayTablesWishlist,
+  portfolioStocks,
+  wishlistStocks,
+};

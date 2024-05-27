@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { menuItems } from '../../data/dataItems';
+import { menuItemsPortfolio } from '../../data/dataItems';
 
 const SecondMenu = ({ activeMenu, setActiveMenu }) => {
   return (
     <div>
-      {Object.keys(menuItems).map((key) => (
+      {Object.keys(menuItemsPortfolio).map((key) => (
         <button
           key={key}
-          onClick={() => setActiveMenu(menuItems[key])}
-          className={`mr-4 ${activeMenu === menuItems[key] ? 'font-bold' : ''}`}
+          onClick={() => setActiveMenu(menuItemsPortfolio[key])}
+          className={`mr-4 ${activeMenu === menuItemsPortfolio[key] ? 'font-bold' : ''}`}
         >
-          {menuItems[key]}
+          {menuItemsPortfolio[key]}
         </button>
       ))}
     </div>

@@ -14,7 +14,8 @@ function Header() {
         if (page === "/" || page === "/index") {
             return (
                 <>
-                    <a href="#features" className={`${inactiveClass} ${baseClasses}`}>Why Equity Wise</a>
+                    {/*<a href="#features" className={`${inactiveClass} ${baseClasses}`}>Why Equity Wise</a>*/}
+                    <Link to="/" className={`${activeClass} ${baseClasses}`}>Why Equity Wise</Link>
                     <Link to="/myportfolio" className={`${inactiveClass} ${baseClasses}`}>My Portfolio</Link>
                     <Link to="/mywishlist" className={`${inactiveClass} ${baseClasses}`}>My Wishlist</Link>
                     <Link to="/marketupdate" className={`${inactiveClass} ${baseClasses}`}>Market Update</Link>
