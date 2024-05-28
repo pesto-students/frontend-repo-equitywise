@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
 import { Link } from 'react-router-dom';
 import image from './diversifyportfolio.webp';
 
@@ -86,8 +86,8 @@ export default Login;
 //import React, { useState } from 'react';
 //import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 //import { useAuth } from '../context/AuthContext';
-//import Header from '../components/common/Header';
-//import Footer from '../components/common/Footer';
+//import Header from '../Components/common/Header';
+//import Footer from '../Components/common/Footer';
 //import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 //const Login = () => {

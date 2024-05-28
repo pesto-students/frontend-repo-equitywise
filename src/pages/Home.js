@@ -1,10 +1,10 @@
 // src/pages/Home.js
 import React from 'react';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
-import OverviewSection from '../components/OverviewSection';
-import FeaturesSection from '../components/FeaturesSection';
-import SummarySection from '../components/SummarySection';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
+import OverviewSection from '../Components/OverviewSection';
+import FeaturesSection from '../Components/FeaturesSection';
+import SummarySection from '../Components/SummarySection';
 
 const Home = () => {
   return (

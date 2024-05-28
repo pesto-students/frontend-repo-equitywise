@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
 import image from './signup.png'; // Import your image
 
 const Signup = () => {

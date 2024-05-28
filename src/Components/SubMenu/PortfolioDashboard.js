@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { displayTablesPortfolio, portfolioStocks, menuItemsPortfolio, stockAttributes } from '../../data/dataItems';
+import { displayTablesPortfolio, portfolioStocks, menuItemsPortfolio, stockAttributes } from '../../Data/dataItems';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
 const calculateTotals = (stocks) => {

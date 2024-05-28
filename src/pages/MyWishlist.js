@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
-import SecondMenu from '../components/submenu/SecondMenu';
-import WishlistDashboard from '../components/submenu/WishlistDashboard';
-import { menuItemsWishlist, displayTablesWishlist, wishlistStocks } from '../data/dataItems';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
+import SecondMenu from '../Components/SubMenu/SecondMenu';
+import WishlistDashboard from '../Components/SubMenu/WishlistDashboard';
+import { menuItemsWishlist, displayTablesWishlist, wishlistStocks } from '../Data/dataItems';
 
 const MyWishlist = () => {
   const [activeMenu, setActiveMenu] = useState(menuItemsWishlist.MY_WISHLIST);
