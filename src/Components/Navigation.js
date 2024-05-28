@@ -1,4 +1,4 @@
-// src/components/Navigation.js
+// src/Components/Navigation.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 

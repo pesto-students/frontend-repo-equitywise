@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
-import SecondMenu from '../components/submenu/SecondMenu';
-import PortfolioDashboard from '../components/submenu/PortfolioDashboard';
-import { menuItemsPortfolio, displayTablesPortfolio, portfolioStocks } from '../data/dataItems';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
+import SecondMenu from '../Components/SubMenu/SecondMenu';
+import PortfolioDashboard from '../Components/SubMenu/PortfolioDashboard';
+import { menuItemsPortfolio, displayTablesPortfolio, portfolioStocks } from '../Data/dataItems';
 
 const MyPortfolio = () => {
   const [activeMenu, setActiveMenu] = useState(menuItemsPortfolio.MY_PORTFOLIO);

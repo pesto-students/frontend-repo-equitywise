@@ -1,8 +1,8 @@
 // src/pages/MarketUpdate.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
+import Header from '../Components/common/Header';
+import Footer from '../Components/common/Footer';
 
 const MarketUpdate = () => {
   const [stocks, setStocks] = useState([]);

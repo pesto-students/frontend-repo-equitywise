@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { menuItemsPortfolio } from '../../data/dataItems';
+import { menuItemsPortfolio } from '../../Data/dataItems';
 
 const SecondMenu = ({ activeMenu, setActiveMenu }) => {
   return (
