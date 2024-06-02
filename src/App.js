@@ -13,7 +13,7 @@ import SecurityInformation from "./pages/FooterPages/SecurityInformation";
 import ContactUs from "./pages/FooterPages/ContactUs";
 import FAQ from "./pages/FooterPages/FAQ";
 // import PrivateRoute from './Components/PrivateRoute'; // Comment out this import if not using it
-import { stock } from "./Data/data2";
+
 
 function App() {
   const handleGoogleLoginSuccess = (response) => {

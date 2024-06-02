@@ -30,7 +30,6 @@ class Portfolio {
           delete this.list[index];
         }
       });
-
     };
     this.displayList = () => console.log(this.list);
     // this.deleteStock();
@@ -40,7 +39,11 @@ class Portfolio {
 class Wishlist {
   constructor(name) {
     this.name = name;
-    this.list = [];
+    this.list = async () => {
+      let res = await fetch("https://backend-repo-equitywise.onrender.com");
+      let data = await res.json();
+      console.log(data);
+    };
     this.addStock = (stockName) => {
       let stockItem = new Stock(stockName);
       this.list.push(stockItem);
@@ -49,6 +52,7 @@ class Wishlist {
       this.list.pop();
     };
     this.displayList = () => console.log(this.list);
+    this.list();
   }
 }
 
