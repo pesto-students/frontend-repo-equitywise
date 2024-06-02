@@ -38,75 +38,21 @@ let stockAttributes = {
 
 // Define display tables for the portfolio
 let displayTablesPortfolio = {
-  [menuItemsPortfolio.MY_PORTFOLIO]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.NO_OF_SHARES,
-    stockAttributes.AVG_COST,
-    stockAttributes.MARKET_PRICE,
-    stockAttributes.DAILY_GAIN,
-    stockAttributes.OVERALL_GAIN,
-    stockAttributes.PORTFOLIO_VALUE,
-  ],
-  [menuItemsPortfolio.INTRADAY_POSITIONS]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.LAST_PRICE,
-    stockAttributes.CHANGE,
-    stockAttributes.CHANGE_PERCENTAGE,
-    stockAttributes.DAY_HIGH,
-    stockAttributes.DAY_LOW,
-    stockAttributes.FIFTY_TWO_WEEK_HIGH,
-    stockAttributes.FIFTY_TWO_WEEK_LOW,
-  ],
-  [menuItemsPortfolio.STOCK_FUNDAMENTALS]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.LAST_PRICE,
-    stockAttributes.EPS,
-    stockAttributes.FORWARD_PE,
-    stockAttributes.DIV_PER_SHARE,
-    stockAttributes.DIV_DATE,
-  ],
+  [menuItemsPortfolio.MY_PORTFOLIO]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.NO_OF_SHARES, stockAttributes.AVG_COST, stockAttributes.MARKET_PRICE, stockAttributes.DAILY_GAIN, stockAttributes.OVERALL_GAIN, stockAttributes.PORTFOLIO_VALUE],
+  [menuItemsPortfolio.INTRADAY_POSITIONS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.CHANGE, stockAttributes.CHANGE_PERCENTAGE, stockAttributes.DAY_HIGH, stockAttributes.DAY_LOW, stockAttributes.FIFTY_TWO_WEEK_HIGH, stockAttributes.FIFTY_TWO_WEEK_LOW],
+  [menuItemsPortfolio.STOCK_FUNDAMENTALS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.EPS, stockAttributes.FORWARD_PE, stockAttributes.DIV_PER_SHARE, stockAttributes.DIV_DATE],
 };
 
 // Define display tables for the wishlist
 let displayTablesWishlist = {
-  [menuItemsWishlist.MY_WISHLIST]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.NO_OF_SHARES,
-    stockAttributes.AVG_COST,
-    stockAttributes.MARKET_PRICE,
-    stockAttributes.DAILY_GAIN,
-    stockAttributes.OVERALL_GAIN,
-    stockAttributes.PORTFOLIO_VALUE,
-  ],
-  [menuItemsWishlist.INTRADAY_POSITIONS]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.LAST_PRICE,
-    stockAttributes.CHANGE,
-    stockAttributes.CHANGE_PERCENTAGE,
-    stockAttributes.DAY_HIGH,
-    stockAttributes.DAY_LOW,
-    stockAttributes.FIFTY_TWO_WEEK_HIGH,
-    stockAttributes.FIFTY_TWO_WEEK_LOW,
-  ],
-  [menuItemsWishlist.STOCK_FUNDAMENTALS]: [
-    stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
-    stockAttributes.LAST_PRICE,
-    stockAttributes.EPS,
-    stockAttributes.FORWARD_PE,
-    stockAttributes.DIV_PER_SHARE,
-    stockAttributes.DIV_DATE,
-  ],
+  [menuItemsWishlist.MY_WISHLIST]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.NO_OF_SHARES, stockAttributes.AVG_COST, stockAttributes.MARKET_PRICE, stockAttributes.DAILY_GAIN, stockAttributes.OVERALL_GAIN, stockAttributes.PORTFOLIO_VALUE],
+  [menuItemsWishlist.INTRADAY_POSITIONS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.CHANGE, stockAttributes.CHANGE_PERCENTAGE, stockAttributes.DAY_HIGH, stockAttributes.DAY_LOW, stockAttributes.FIFTY_TWO_WEEK_HIGH, stockAttributes.FIFTY_TWO_WEEK_LOW],
+  [menuItemsWishlist.STOCK_FUNDAMENTALS]: [stockAttributes.STOCK_NAME, stockAttributes.SYMBOL, stockAttributes.LAST_PRICE, stockAttributes.EPS, stockAttributes.FORWARD_PE, stockAttributes.DIV_PER_SHARE, stockAttributes.DIV_DATE],
 };
 
 // Function to calculate Overall Gain and Portfolio Value
 function calculateStockValues(stocks) {
-  return stocks.map(stock => {
+  return stocks.map((stock) => {
     stock[stockAttributes.OVERALL_GAIN] = (stock[stockAttributes.MARKET_PRICE] - stock[stockAttributes.AVG_COST]) * stock[stockAttributes.NO_OF_SHARES];
     stock[stockAttributes.PORTFOLIO_VALUE] = stock[stockAttributes.MARKET_PRICE] * stock[stockAttributes.NO_OF_SHARES];
     return stock;
@@ -231,12 +177,4 @@ let wishlistStocks = [
 portfolioStocks = calculateStockValues(portfolioStocks);
 wishlistStocks = calculateStockValues(wishlistStocks);
 
-export {
-  menuItemsPortfolio,
-  menuItemsWishlist,
-  stockAttributes,
-  displayTablesPortfolio,
-  displayTablesWishlist,
-  portfolioStocks,
-  wishlistStocks,
-};
+export { menuItemsPortfolio, menuItemsWishlist, stockAttributes, displayTablesPortfolio, displayTablesWishlist, portfolioStocks, wishlistStocks };
