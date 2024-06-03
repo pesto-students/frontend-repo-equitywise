@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import Header from '../Components/common/Header';
-import Footer from '../Components/common/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import image from '../assets/images/login.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -58,7 +56,6 @@ const Login = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
       <div className="flex-grow flex justify-center items-center">
         <div className="flex flex-col md:flex-row w-full md:w-2/3 p-4 bg-white rounded shadow-md">
           <div className="md:w-1/2 p-4 hidden md:block">
@@ -106,7 +103,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
