@@ -3,8 +3,6 @@ import axios from 'axios';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom'; 
-import Header from '../Components/common/Header';
-import Footer from '../Components/common/Footer';
 import image from '../assets/images/signup.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -82,10 +80,8 @@ const Signup = () => {
 
   return (
     <div className='flex flex-col h-screen'>
-      <Header />
       <div className="flex-grow flex justify-center items-center">
-        <div className='flex flex-col md:flex-row w-full md:w-2/3 p-4 bg-white rounded shadow-md'>
-        
+        <div className='flex flex-col md:flex-row w-full md:w-2/3 p-4 bg-white rounded shadow-md'>        
           <div className="md:w-1/2 md:order-1 order-2 p-4">
             <h1 className="text-2xl font-bold mb-4">Register and Track your Equity Portfolio for Free</h1>
             {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
@@ -139,7 +135,6 @@ const Signup = () => {
             <button onClick={handleEmailSignup} className="w-full bg-blue-500 text-white p-2 rounded mb-4">
               Sign Up
             </button>
-            {/* Render Google Login button only once */}
             <div className='flex justify-center'>
               <GoogleOAuthProvider clientId="233735191819-86l6aehhc334ht83jtbdcun7lmkcdid6.apps.googleusercontent.com">
                 <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} cookiePolicy={'single_host_origin'} />
@@ -152,7 +147,6 @@ const Signup = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

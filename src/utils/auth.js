@@ -1,6 +1,5 @@
 // src/auth.js
 export const isAuthenticated = () => {
-    // Assuming token is stored in localStorage
     return localStorage.getItem('token') !== null;
   };
   

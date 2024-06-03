@@ -1,8 +1,6 @@
 // src/components/MarketUpdate.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '../Components/common/Header';
-import Footer from '../Components/common/Footer';
 
 const MarketUpdate = () => {
   const [symbol, setSymbol] = useState('');
@@ -32,7 +30,6 @@ const MarketUpdate = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <div className="flex-grow">
         <div className="bg-gray-100 py-4">
           <div className="container mx-auto flex justify-center">
@@ -61,7 +58,6 @@ const MarketUpdate = () => {
           {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
