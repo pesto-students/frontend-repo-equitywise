@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Header from '../Components/common/Header';
 import Footer from '../Components/common/Footer';
 import { Link, useNavigate } from 'react-router-dom';
-import image from './diversifyportfolio.webp';
+import image from '../assets/images/login.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
@@ -44,7 +44,7 @@ const Login = () => {
     })
     .then(function (response) {
       console.log('API response:', response);
-      if (response.data.success) {
+      if (response.status === 200) {
         onSuccess(response);
       } else {
         setErrorMessage('Invalid email or password');
@@ -98,9 +98,11 @@ const Login = () => {
             <div className="mb-4">
               <p>Not registered with Equity Wise? <Link to="/signup" className="text-blue-500">Sign Up here</Link></p>
             </div>
-            <GoogleOAuthProvider clientId="536138454360-vu6gndr3s5qrao17q08p57fvrs9lj2ee.apps.googleusercontent.com">
+            <div className='flex justify-center'>
+            <GoogleOAuthProvider clientId="233735191819-86l6aehhc334ht83jtbdcun7lmkcdid6.apps.googleusercontent.com">
               <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} />
             </GoogleOAuthProvider>
+            </div>
           </div>
         </div>
       </div>
