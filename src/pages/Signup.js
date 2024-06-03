@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom'; 
 import Header from '../Components/common/Header';
 import Footer from '../Components/common/Footer';
-import image from './signup.png';
+import image from '../assets/images/signup.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,6 +17,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
   const onSuccess = (response) => {
     console.log('Signup Success:', response);
     login(response.data);
@@ -139,12 +140,14 @@ const Signup = () => {
               Sign Up
             </button>
             {/* Render Google Login button only once */}
-            <GoogleOAuthProvider clientId="536138454360-vu6gndr3s5qrao17q08p57fvrs9lj2ee.apps.googleusercontent.com">
-              <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} cookiePolicy={'single_host_origin'} />
-            </GoogleOAuthProvider>
+            <div className='flex justify-center'>
+              <GoogleOAuthProvider clientId="233735191819-86l6aehhc334ht83jtbdcun7lmkcdid6.apps.googleusercontent.com">
+                <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} cookiePolicy={'single_host_origin'} />
+              </GoogleOAuthProvider>
+            </div>
           </div>
 
-          <div className="md:w-1/2 md:order-2 order-1 p-4">
+          <div className="md:w-1/2 md:order-2 order-1 p-4 ">
             <img src={image} alt='Sign Up to Equity Wise' className='w-full h-auto'/>
           </div>
         </div>

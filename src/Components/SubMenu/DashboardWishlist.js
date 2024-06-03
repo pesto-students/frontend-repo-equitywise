@@ -1,26 +1,9 @@
+// src/Components/SubMenu/DashboardWishlist.js
 import React, { useState } from 'react';
-import { displayTablesWishlist, wishlistStocks, menuItemsWishlist, stockAttributes } from '../../Data/dataItems';
+import { wishlistStocks, displayTablesWishlist, stockAttributes } from '../../Data/dataItems';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
-const calculateTotals = (stocks) => {
-  const totals = {
-    [stockAttributes.MARKET_PRICE]: 0,
-    [stockAttributes.DAILY_GAIN]: 0,
-    [stockAttributes.OVERALL_GAIN]: 0,
-    [stockAttributes.PORTFOLIO_VALUE]: 0,
-  };
-
-  stocks.forEach(stock => {
-    totals[stockAttributes.MARKET_PRICE] += stock[stockAttributes.MARKET_PRICE] || 0;
-    totals[stockAttributes.DAILY_GAIN] += stock[stockAttributes.DAILY_GAIN] || 0;
-    totals[stockAttributes.OVERALL_GAIN] += stock[stockAttributes.OVERALL_GAIN] || 0;
-    totals[stockAttributes.PORTFOLIO_VALUE] += stock[stockAttributes.PORTFOLIO_VALUE] || 0;
-  });
-
-  return totals;
-};
-
-const WishlistDashboard = () => {
+const DashboardWishlist = ({ activeMenu }) => {
   const [stocks, setStocks] = useState(wishlistStocks);
   const [editingStock, setEditingStock] = useState(null);
   const [newStock, setNewStock] = useState({
@@ -33,7 +16,7 @@ const WishlistDashboard = () => {
   });
   const [showAddStockForm, setShowAddStockForm] = useState(false);
 
-  const totals = calculateTotals(stocks);
+  const displayColumns = displayTablesWishlist[activeMenu] || displayTablesWishlist[Object.keys(displayTablesWishlist)[0]];
 
   const handleAddStock = (e) => {
     e.preventDefault();
@@ -68,7 +51,7 @@ const WishlistDashboard = () => {
       <table className="w-full mb-4">
         <thead className="w-full">
           <tr className="w-full bg-slate-300">
-            {displayTablesWishlist[menuItemsWishlist.MY_WISHLIST].map((item) => (
+            {displayColumns.map((item) => (
               <td key={item} className="h-10 pl-4 pr-4 border text-center">
                 {item}
               </td>
@@ -79,7 +62,7 @@ const WishlistDashboard = () => {
         <tbody className="w-full">
           {stocks.map((scrip) => (
             <tr key={scrip[stockAttributes.SYMBOL]} className="w-full">
-              {displayTablesWishlist[menuItemsWishlist.MY_WISHLIST].map((val, index) => (
+              {displayColumns.map((val, index) => (
                 <td
                   key={`${scrip[stockAttributes.SYMBOL]}${val}${index}`}
                   className={`h-8 pl-3 pr-3 ${
@@ -112,19 +95,6 @@ const WishlistDashboard = () => {
             </tr>
           ))}
         </tbody>
-        <tfoot>
-          <tr className="w-full bg-slate-300">
-            <td className="h-8 pl-4 pr-4 border text-center font-bold" colSpan={3}>
-              Totals
-            </td>
-            {displayTablesWishlist[menuItemsWishlist.MY_WISHLIST].slice(3).map((item, index) => (
-            <td key={`${item}-total`} className="h-8 pl-4 pr-4 border text-right font-bold">
-                {typeof totals[item] === 'number' ? totals[item].toFixed(2) : ''}
-            </td>
-        ))}
-            <td className="h-8 pl-4 pr-4 border text-center"></td>
-          </tr>
-        </tfoot>
       </table>
 
       <button
@@ -134,7 +104,6 @@ const WishlistDashboard = () => {
         + Add New Stock
       </button>
 
-    {/* Add New Stock form */}
       {showAddStockForm && (
         <div className="mb-4">
           <h2 className="text-xl font-bold mb-2">Add New Stock</h2>
@@ -144,45 +113,48 @@ const WishlistDashboard = () => {
                 <div key={key} className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mb-4 px-2">
                   <label className="block mb-1">{key}</label>
                   <input
-                    type={key.includes('Shares') || key.includes('Cost') || key.includes('Price') || key.includes('Gain') || key.includes('Value') ? 'number' : 'text'}
+                    type={typeof value === 'number' ? 'number' : 'text'}
+                    name={key}
                     value={value}
                     onChange={(e) => setNewStock({ ...newStock, [key]: e.target.value })}
-                    placeholder={key}
                     className="p-2 border rounded w-full"
                   />
                 </div>
               ))}
-              </div>
-              <button type="submit" className="p-2 bg-blue-500 text-white rounded">Add Stock</button>
-            </form>
-          </div>
-        )}
-  
-        {editingStock && (
-          <div className="mb-4">
-            <h2 className="text-xl font-bold mb-2">Edit Stock</h2>
-            <form onSubmit={handleUpdateStock} className="mb-4">
-              <div className="flex flex-wrap">
-                {Object.entries(editingStock).map(([key, value]) => (
-                  <div key={key} className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mb-4 px-2">
-                    <label className="block mb-1">{key}</label>
-                    <input
-                      type={key.includes('Shares') || key.includes('Cost') || key.includes('Price') || key.includes('Gain') || key.includes('Value') ? 'number' : 'text'}
-                      value={value}
-                      onChange={(e) => setEditingStock({ ...editingStock, [key]: e.target.value })}
-                      placeholder={key}
-                      className="p-2 border rounded w-full"
-                    />
-                  </div>
-                ))}
-              </div>
-              <button type="submit" className="p-2 bg-blue-500 text-white rounded">Update Stock</button>
-            </form>
-          </div>
-        )}
-      </div>
-    );
-  };
-  
-  export default WishlistDashboard;
-  
+            </div>
+            <button type="submit" className="p-2 bg-blue-500 text-white rounded">
+              Add Stock
+            </button>
+          </form>
+        </div>
+      )}
+
+      {editingStock && (
+        <div className="mb-4">
+          <h2 className="text-xl font-bold mb-2">Edit Stock</h2>
+          <form onSubmit={handleUpdateStock} className="mb-4">
+            <div className="flex flex-wrap">
+              {Object.entries(editingStock).map(([key, value]) => (
+                <div key={key} className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 mb-4 px-2">
+                  <label className="block mb-1">{key}</label>
+                  <input
+                    type={typeof value === 'number' ? 'number' : 'text'}
+                    name={key}
+                    value={value}
+                    onChange={(e) => setEditingStock({ ...editingStock, [key]: e.target.value })}
+                    className="p-2 border rounded w-full"
+                  />
+                </div>
+              ))}
+            </div>
+            <button type="submit" className="p-2 bg-blue-500 text-white rounded">
+              Update Stock
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DashboardWishlist;
