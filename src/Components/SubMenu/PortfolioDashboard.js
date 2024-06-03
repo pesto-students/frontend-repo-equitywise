@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { displayTablesPortfolio, portfolioStocks, menuItemsPortfolio, stockAttributes } from "../../Data/dataItems";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import { User } from "../../Data/classes";
-
-let shrishyle = new User();
-
-
+import { shrishyle } from "../../Data/classes";
 
 const calculateTotals = (stocks) => {
   const totals = {
@@ -25,7 +21,7 @@ const calculateTotals = (stocks) => {
   return totals;
 };
 
-const PortfolioDashboard = () => {
+const PortfolioDashboard2 = () => {
   const [stocks, setStocks] = useState(portfolioStocks);
   const [editingStock, setEditingStock] = useState(null);
   const [newStock, setNewStock] = useState({
@@ -166,4 +162,4 @@ const PortfolioDashboard = () => {
   );
 };
 
-export default PortfolioDashboard;
+export default PortfolioDashboard2;

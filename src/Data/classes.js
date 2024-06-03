@@ -39,11 +39,7 @@ class Portfolio {
 class Wishlist {
   constructor(name) {
     this.name = name;
-    this.list = async () => {
-      let res = await fetch("https://backend-repo-equitywise.onrender.com");
-      let data = await res.json();
-      console.log(data);
-    };
+    this.list = [];
     this.addStock = (stockName) => {
       let stockItem = new Stock(stockName);
       this.list.push(stockItem);
@@ -92,17 +88,20 @@ class Stock {
 }
 
 // Code for Testing the above code
-// let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
-// shrishyle.portfolio.addStock("Tata");
-// shrishyle.portfolio.list[0].buyStock(100, 20);
-// shrishyle.portfolio.list[0].buyStock(50, 25);
-// shrishyle.portfolio.list[0].buyStock(50, 30);
-// shrishyle.portfolio.list[0].sellStock(50);
-// shrishyle.portfolio.displayList();
-// shrishyle.portfolio.list[0].displayAverageCost();
-// shrishyle.portfolio.list[0].displayTotalQuantity();
+let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
+shrishyle.portfolio.addStock("Alembic Pharma");
+shrishyle.portfolio.addStock("ICICI Prudential");
+shrishyle.portfolio.list[0].buyStock(100, 20);
+shrishyle.portfolio.list[1].buyStock(53, 20);
+shrishyle.portfolio.list[1].buyStock(33, 50);
+shrishyle.portfolio.list[0].buyStock(50, 25);
+shrishyle.portfolio.list[0].buyStock(50, 30);
+shrishyle.portfolio.list[0].sellStock(50);
+shrishyle.portfolio.displayList();
+shrishyle.portfolio.list[0].displayAverageCost();
+shrishyle.portfolio.list[0].displayTotalQuantity();
 // shrishyle.portfolio.list[0].sellStock(150);
-// shrishyle.portfolio.list[0].displayTransactionStatement();
-// shrishyle.portfolio.displayList();
+shrishyle.portfolio.list[0].displayTransactionStatement();
+shrishyle.portfolio.displayList();
 
-export { User };
+export { shrishyle };
