@@ -6,7 +6,9 @@ const finnhubClient = new finnhub.DefaultApi();
 
 // Stock symbols
 finnhubClient.stockSymbols("BO", (error, data, response) => {
-    console.log(data)
+  console.log(data);
+  console.log(error);
+  console.log(response);
 });
 
 class User {
