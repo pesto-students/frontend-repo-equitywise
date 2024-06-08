@@ -1,4 +1,13 @@
-import { indexOf } from "lodash";
+const finnhub = require("finnhub");
+
+const api_key = finnhub.ApiClient.instance.authentications["api_key"];
+api_key.apiKey = "cpibh8hr01qpf0qhejg0cpibh8hr01qpf0qhejgg"; // Replace this
+const finnhubClient = new finnhub.DefaultApi();
+
+// Stock symbols
+finnhubClient.stockSymbols("BO", (error, data, response) => {
+    console.log(data)
+});
 
 class User {
   constructor(userName, email) {
@@ -26,8 +35,8 @@ class Portfolio {
       this.list.forEach((item) => {
         console.log(item.totalQuantity);
         if (item.totalQuantity === 0) {
-          let index = indexOf(item);
-          delete this.list[index];
+          // let index = indexOf(item);
+          // delete this.list[index];
         }
       });
     };
@@ -88,20 +97,20 @@ class Stock {
 }
 
 // Code for Testing the above code
-let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
-shrishyle.portfolio.addStock("Alembic Pharma");
-shrishyle.portfolio.addStock("ICICI Prudential");
-shrishyle.portfolio.list[0].buyStock(100, 20);
-shrishyle.portfolio.list[1].buyStock(53, 20);
-shrishyle.portfolio.list[1].buyStock(33, 50);
-shrishyle.portfolio.list[0].buyStock(50, 25);
-shrishyle.portfolio.list[0].buyStock(50, 30);
-shrishyle.portfolio.list[0].sellStock(50);
-shrishyle.portfolio.displayList();
-shrishyle.portfolio.list[0].displayAverageCost();
-shrishyle.portfolio.list[0].displayTotalQuantity();
-// shrishyle.portfolio.list[0].sellStock(150);
-shrishyle.portfolio.list[0].displayTransactionStatement();
-shrishyle.portfolio.displayList();
+// let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
+// shrishyle.portfolio.addStock("Alembic Pharma");
+// shrishyle.portfolio.addStock("ICICI Prudential");
+// shrishyle.portfolio.list[0].buyStock(100, 20);
+// shrishyle.portfolio.list[1].buyStock(53, 20);
+// shrishyle.portfolio.list[1].buyStock(33, 50);
+// shrishyle.portfolio.list[0].buyStock(50, 25);
+// shrishyle.portfolio.list[0].buyStock(50, 30);
+// shrishyle.portfolio.list[0].sellStock(50);
+// shrishyle.portfolio.displayList();
+// shrishyle.portfolio.list[0].displayAverageCost();
+// shrishyle.portfolio.list[0].displayTotalQuantity();
+// // shrishyle.portfolio.list[0].sellStock(150);
+// shrishyle.portfolio.list[0].displayTransactionStatement();
+// shrishyle.portfolio.displayList();
 
-export { shrishyle };
+// export { shrishyle };
