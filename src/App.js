@@ -12,7 +12,10 @@ import InvestorRelations from "./pages/FooterPages/InvestorRelations";
 import SecurityInformation from "./pages/FooterPages/SecurityInformation";
 import ContactUs from "./pages/FooterPages/ContactUs";
 import FAQ from "./pages/FooterPages/FAQ";
+import { StockData } from "./Data/API";
 // import PrivateRoute from './Components/PrivateRoute'; // Comment out this import if not using it
+
+
 
 
 function App() {

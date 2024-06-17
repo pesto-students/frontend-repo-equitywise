@@ -1,15 +1,19 @@
-const finnhub = require("finnhub");
+const apiKey = "cpibh8hr01qpf0qhejg0cpibh8hr01qpf0qhejgg";
+const query = "alembic";
 
-const api_key = finnhub.ApiClient.instance.authentications["api_key"];
-api_key.apiKey = "cpibh8hr01qpf0qhejg0cpibh8hr01qpf0qhejgg"; // Replace this
-const finnhubClient = new finnhub.DefaultApi();
-
-// Stock symbols
-finnhubClient.stockSymbols("BO", (error, data, response) => {
-  console.log(data);
-  console.log(error);
-  console.log(response);
-});
+fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${apiKey}`)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+    return response.json();
+  })
+  .then((data) => {
+    console.log(JSON.stringify(data));
+  })
+  .catch((error) => {
+    console.error("There was a problem with the fetch operation:", error);
+  });
 
 class User {
   constructor(userName, email) {
@@ -99,20 +103,20 @@ class Stock {
 }
 
 // Code for Testing the above code
-// let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
-// shrishyle.portfolio.addStock("Alembic Pharma");
-// shrishyle.portfolio.addStock("ICICI Prudential");
-// shrishyle.portfolio.list[0].buyStock(100, 20);
-// shrishyle.portfolio.list[1].buyStock(53, 20);
-// shrishyle.portfolio.list[1].buyStock(33, 50);
-// shrishyle.portfolio.list[0].buyStock(50, 25);
-// shrishyle.portfolio.list[0].buyStock(50, 30);
-// shrishyle.portfolio.list[0].sellStock(50);
-// shrishyle.portfolio.displayList();
-// shrishyle.portfolio.list[0].displayAverageCost();
-// shrishyle.portfolio.list[0].displayTotalQuantity();
-// // shrishyle.portfolio.list[0].sellStock(150);
-// shrishyle.portfolio.list[0].displayTransactionStatement();
-// shrishyle.portfolio.displayList();
+let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
+shrishyle.portfolio.addStock("Alembic Pharma");
+shrishyle.portfolio.addStock("ICICI Prudential");
+shrishyle.portfolio.list[0].buyStock(100, 20);
+shrishyle.portfolio.list[1].buyStock(53, 20);
+shrishyle.portfolio.list[1].buyStock(33, 50);
+shrishyle.portfolio.list[0].buyStock(50, 25);
+shrishyle.portfolio.list[0].buyStock(50, 30);
+shrishyle.portfolio.list[0].sellStock(50);
+shrishyle.portfolio.displayList();
+shrishyle.portfolio.list[0].displayAverageCost();
+shrishyle.portfolio.list[0].displayTotalQuantity();
+// shrishyle.portfolio.list[0].sellStock(150);
+shrishyle.portfolio.list[0].displayTransactionStatement();
+shrishyle.portfolio.displayList();
 
-// export { shrishyle };
+export { shrishyle };
