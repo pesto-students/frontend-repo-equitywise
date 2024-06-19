@@ -1,20 +1,3 @@
-const apiKey = "cpibh8hr01qpf0qhejg0cpibh8hr01qpf0qhejgg";
-const query = "alembic";
-
-fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${apiKey}`)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Network response was not ok " + response.statusText);
-    }
-    return response.json();
-  })
-  .then((data) => {
-    console.log(JSON.stringify(data));
-  })
-  .catch((error) => {
-    console.error("There was a problem with the fetch operation:", error);
-  });
-
 class User {
   constructor(userName, email) {
     this.userName = userName;
@@ -104,7 +87,7 @@ class Stock {
 
 // Code for Testing the above code
 let shrishyle = new User("shrishyle", "shrishyle.pandit@gmail.com");
-shrishyle.portfolio.addStock("Alembic Pharma");
+shrishyle.portfolio.addStock("Keyboard");
 shrishyle.portfolio.addStock("ICICI Prudential");
 shrishyle.portfolio.list[0].buyStock(100, 20);
 shrishyle.portfolio.list[1].buyStock(53, 20);
