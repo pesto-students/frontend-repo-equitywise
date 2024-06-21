@@ -5,8 +5,9 @@ import { shrishyle } from "../../Data/classes";
 import MenuTabs from "./MenuTabs";
 import TableHeader from "./TableHeader";
 import StockItemRow from "./StockItemRow";
+import AddNewStock from "./AddNewStock";
 
-export default function Portfolio() {
+export default function Wishlist() {
   return (
     <>
       <MenuTabs />
@@ -16,6 +17,7 @@ export default function Portfolio() {
           <StockItemRow />
         </tbody>
       </table>
+      <AddNewStock />
     </>
   );
 }

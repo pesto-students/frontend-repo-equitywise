@@ -1,8 +1,9 @@
 import React from "react";
+import ActionButtons from "./ActionButtons";
 
 const StockItemRow = () => {
   return (
-    <tr className="hover:bg-slate-100">
+    <tr className="">
       <td className="h-8 pl-3 pr-4 text-left">Taa</td>
       <td className="h-8 pl-3 pr-4 text-right">Taa</td>
       <td className="h-8 pl-3 pr-4 text-right">Taa</td>
@@ -10,7 +11,10 @@ const StockItemRow = () => {
       <td className="h-8 pl-3 pr-4 text-right">Taa</td>
       <td className="h-8 pl-3 pr-4 text-right">Taa</td>
       <td className="h-8 pl-3 pr-4 text-right">Taa</td>
-      <td className="h-8 pl-3 pr-4 text-right">sdfs</td>
+      <td className="h-8 pl-3 pr-4 text-right">Taa</td>
+      <td className="h-8 pl-3 pr-4 text-right">
+        <ActionButtons />
+      </td>
     </tr>
   );
 };

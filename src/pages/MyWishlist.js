@@ -3,6 +3,7 @@ import Header from '../Components/common/Header';
 import Footer from '../Components/common/Footer';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import WishlistDashboard from '../Components/SubMenu/WishlistDashboard';
+import Wishlist from '../Components/Wishlist/Wishlist';
 import { menuItemsWishlist, displayTablesWishlist, wishlistStocks } from '../Data/dataItems';
 
 const MyWishlist = () => {
@@ -14,7 +15,8 @@ const MyWishlist = () => {
       <main className="flex-grow container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">My Wishlist</h1>
         <SecondMenu activeMenu={activeMenu} setActiveMenu={setActiveMenu} menuItems={menuItemsWishlist} />
-        <WishlistDashboard activeMenu={activeMenu} displayData={displayTablesWishlist[activeMenu]} stocks={wishlistStocks} />
+        <WishlistDashboard activeMenu={ activeMenu } displayData={ displayTablesWishlist[activeMenu] } stocks={ wishlistStocks } />
+        <Wishlist/>
       </main>
       <Footer />
     </div>

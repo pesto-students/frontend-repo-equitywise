@@ -5,6 +5,7 @@ const TableHeader = () => {
     <thead className={`w-full`}>
       <tr className={`w-full bg-slate-300`}>
         <td className={`h-10 pl-4 pr-4 border text-center`}>Stock Name</td>
+        <td className={`h-10 pl-4 pr-4 border text-center`}>Symbol</td>
         <td className={`h-10 pl-4 pr-4 border text-center`}># Shares</td>
         <td className={`h-10 pl-4 pr-4 border text-center`}>Ave Cost</td>
         <td className={`h-10 pl-4 pr-4 border text-center`}>Market Price</td>
