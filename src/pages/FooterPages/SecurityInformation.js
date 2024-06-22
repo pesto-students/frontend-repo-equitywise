@@ -1,11 +1,8 @@
 import React from 'react';
-import Header from '../../Components/common/Header';
-import Footer from '../../Components/common/Footer';
 
 const SecurityInformation = () => {
     return (
         <div>
-            <Header />
             <div className="container mx-auto p-8">
                 <h1 className="text-4xl font-bold mb-4 text-center">Security Information</h1>
                 <div className="bg-white shadow-md rounded-lg p-6">
@@ -33,7 +30,6 @@ const SecurityInformation = () => {
                     </ul>
                 </div>
             </div>
-            <Footer />
         </div>
     );
 }

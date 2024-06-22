@@ -15,6 +15,7 @@ const DashboardWishlist = () => {
     [stockAttributes.AVG_COST]: 0,
     [stockAttributes.MARKET_PRICE]: 0,
     [stockAttributes.DAILY_GAIN]: 0,
+    [stockAttributes.DAILY_GAIN_PERCENT]: 0,
   });
   const [showAddStockForm, setShowAddStockForm] = useState(false);
 

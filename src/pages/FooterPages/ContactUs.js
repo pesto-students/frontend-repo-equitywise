@@ -1,11 +1,8 @@
 import React from 'react';
-import Header from '../../Components/common/Header';
-import Footer from '../../Components/common/Footer';
 
 const ContactUs = () => {
     return (
         <div className="flex flex-col min-h-screen">
-            <Header />
             <main className="flex-grow p-8 bg-gray-100">
                 <h1 className="text-4xl font-bold mb-4 text-center">Contact Us</h1>
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
@@ -16,7 +13,6 @@ const ContactUs = () => {
                     <p>For any other inquiries, please feel free to get in touch with us through our social media channels or visit our support page.</p>
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }
