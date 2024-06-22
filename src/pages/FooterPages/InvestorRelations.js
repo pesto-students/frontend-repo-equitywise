@@ -1,11 +1,8 @@
 import React from 'react';
-import Header from '../../Components/common/Header';
-import Footer from '../../Components/common/Footer';
 
 const InvestorRelations = () => {
     return (
         <div>
-            <Header />
             <main></main>
             <div className='container mx-auto p-8'>
                 <h1 className='text-4xl font-bold mb-4 text-center'>Investor Relations</h1>
@@ -22,7 +19,6 @@ const InvestorRelations = () => {
                 </div>
                 <p>If you have any questions or need further information, please do not hesitate to contact us at investors@pestoapp.com.</p>
             </div>
-            <Footer />
         </div>
     );
 }

@@ -1,11 +1,8 @@
 import React from 'react';
-import Header from '../../Components/common/Header';
-import Footer from '../../Components/common/Footer';
 
 const FAQs = () => {
     return (
         <div>
-            <Header />
             <main className="container mx-auto p-8">
                 <h1 className="text-4xl font-bold mb-8 text-center">Frequently Asked Questions (FAQs)</h1>
                 <ul className="space-y-6">
@@ -71,7 +68,6 @@ const FAQs = () => {
                     </li>
                 </ul>
             </main>
-            <Footer />
         </div>
     );
 }

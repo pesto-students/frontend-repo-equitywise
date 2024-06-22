@@ -1,11 +1,8 @@
 import React from 'react';
-import Header from '../../Components/common/Header';
-import Footer from '../../Components/common/Footer';
 
 const Careers = () => {
     return (
         <div>
-            <Header />
             <main className='container mx-auto p-8'>
             <h1 className='text-4xl font-bold mb-4 text-center'>Careers</h1>
             <div class="bg-white shadow-md rounded-lg p-6">
@@ -40,7 +37,6 @@ const Careers = () => {
                 <br></br>
                 <p>If you're interested in any of these positions, please contact us at careers@pestoapp.com.</p>
             </main>
-            <Footer />
         </div>
     );
 }
