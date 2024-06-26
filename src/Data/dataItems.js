@@ -2,7 +2,7 @@
 
 export const stockAttributes = {
   STOCK_NAME: 'Stock Name',
-  SYMBOL: 'Symbol',
+  STOCK_SYMBOL: 'Stock Symbol',
   NO_OF_SHARES: 'No. of Shares',
   AVG_COST: 'Avg Cost',
   MARKET_PRICE: 'Market Price',
@@ -26,34 +26,6 @@ export const stockAttributes = {
   REL_PRICE_SP500_4W: 'Rel Price S&P 4w',
 };
 
-export const portfolioStocks = [
-  {
-    'Stock Name': 'ABC Corp',
-    'Symbol': 'ABC',
-    'No. of Shares': 100,
-    'Avg Cost': 150,
-    'Market Price': 160,
-    'Daily Gain': 2,
-    'Overall Gain': 1000,
-    'Total Value': 16000,
-  },
-  // Add more stocks as needed
-];
-
-export const wishlistStocks = [
-  {
-    'Stock Name': 'XYZ Corp',
-    'Symbol': 'XYZ',
-    'No. of Shares': 10,
-    'Avg Cost': 100,
-    'Market Price': 110,
-    'Daily Gain': 2,
-    'Overall Gain': 1000,
-    'Total Value': 16000,
-  },
-  // Add more stocks as needed
-];
-
 export const menuItemsPortfolio = {
   PORTFOLIO_POSITIONS: 'Portfolio Positions',
   PORTFOLIO_INTRADAY: 'Portfolio Intraday',
@@ -69,7 +41,7 @@ export const menuItemsWishlist = {
 export const displayTablesPortfolio = {
   [menuItemsPortfolio.PORTFOLIO_POSITIONS]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.NO_OF_SHARES,
     stockAttributes.AVG_COST,
     stockAttributes.MARKET_PRICE,
@@ -77,11 +49,10 @@ export const displayTablesPortfolio = {
     stockAttributes.DAILY_GAIN_PERCENT,
     stockAttributes.OVERALL_GAIN,
     stockAttributes.TOTAL_VALUE,
-    'Actions',
   ],
   [menuItemsPortfolio.PORTFOLIO_INTRADAY]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.MARKET_PRICE,
     stockAttributes.DAILY_GAIN_PERCENT,
     stockAttributes.PREVIOUS_DAY_CLOSE,
@@ -94,7 +65,7 @@ export const displayTablesPortfolio = {
   ],
   [menuItemsPortfolio.PORTFOLIO_FUNDAMENTALS]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.MARKET_CAP,
     stockAttributes.PE_ANNUAL,
     stockAttributes.CR_ANNUAL,
@@ -107,7 +78,7 @@ export const displayTablesPortfolio = {
 export const displayTablesWishlist = {
   [menuItemsWishlist.WISHLIST_POSITIONS]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.NO_OF_SHARES,
     stockAttributes.AVG_COST,
     stockAttributes.MARKET_PRICE,
@@ -115,11 +86,10 @@ export const displayTablesWishlist = {
     stockAttributes.DAILY_GAIN_PERCENT,
     stockAttributes.OVERALL_GAIN,
     stockAttributes.TOTAL_VALUE,
-    'Actions',
   ],
   [menuItemsWishlist.WISHLIST_INTRADAY]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.MARKET_PRICE,
     stockAttributes.DAILY_GAIN_PERCENT,
     stockAttributes.PREVIOUS_DAY_CLOSE,
@@ -132,7 +102,7 @@ export const displayTablesWishlist = {
   ],
   [menuItemsWishlist.WISHLIST_FUNDAMENTALS]: [
     stockAttributes.STOCK_NAME,
-    stockAttributes.SYMBOL,
+    stockAttributes.STOCK_SYMBOL,
     stockAttributes.MARKET_CAP,
     stockAttributes.PE_ANNUAL,
     stockAttributes.CR_ANNUAL,

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import image from '../assets/images/login.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
+import { useUser } from '../context/UserContext';
+import GoogleLoginComponent from '../Components/GoogleAuth';
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -15,8 +16,10 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); 
 
+  const { setUsername } = useUser();
   const onSuccess = (response) => {
     console.log('Login Success:', response);
+    setUsername(email);
     login(response.data);
     navigate('/MyPortfolio');
   };
@@ -41,14 +44,16 @@ const Login = () => {
       password: password
     })
     .then(function (response) {
+      debugger;
       console.log('API response:', response);
-      if (response.status === 200) {
+      if (response.status === 201 || response.status === 200) {
         onSuccess(response);
       } else {
         setErrorMessage('Invalid email or password');
       }
     })
     .catch(function (error) {
+      debugger;
       console.log('API error:', error);
       onFailure(error);
     });
@@ -96,8 +101,8 @@ const Login = () => {
               <p>Not registered with Equity Wise? <Link to="/signup" className="text-blue-500">Sign Up here</Link></p>
             </div>
             <div className='flex justify-center'>
-            <GoogleOAuthProvider clientId="233735191819-86l6aehhc334ht83jtbdcun7lmkcdid6.apps.googleusercontent.com">
-              <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} />
+            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+               <GoogleLoginComponent/>
             </GoogleOAuthProvider>
             </div>
           </div>

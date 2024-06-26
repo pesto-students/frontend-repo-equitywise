@@ -7,29 +7,31 @@ const MarketUpdate = () => {
   const [region, setRegion] = useState('us');
   const [companyNews, setCompanyNews] = useState([]);
   const [generalNews, setGeneralNews] = useState([]);
+  const [financeData, setFinanceData] = useState([]);
   const [loadingCompanyNews, setLoadingCompanyNews] = useState(false);
   const [loadingGeneralNews, setLoadingGeneralNews] = useState(false);
+  const [loadingFinanceData, setLoadingFinanceData] = useState(false);
   const [errorCompanyNews, setErrorCompanyNews] = useState(null);
   const [errorGeneralNews, setErrorGeneralNews] = useState(null);
+  const [errorFinanceData, setErrorFinanceData] = useState(null);
 
   useEffect(() => {
     const fetchGeneralNews = async () => {
       setLoadingGeneralNews(true);
       try {
-            const generalNewsResponse = await axios.get('https://www.searchapi.io/api/v1/search', {
-              params: {
-                api_key: 'aezV3kcrvDVvspYnHhkDkywv', // Use environment variable for API key
-                engine: 'google_news',
-                q: 'market news',
-                location: region,
-                hl: 'en',
-              },
-            });
+        const generalNewsResponse = await axios.get(process.env.REACT_APP_MARKET_UPDATE_API_URL, {
+          params: {
+            api_key: process.env.REACT_APP_GOOGLE_NEWS_API_KEY,
+            engine: 'google_news',
+            q: 'market news',
+            location: region,
+            hl: 'en',
+          },
+        });
 
-        setGeneralNews(generalNewsResponse.data.organic_results);
- 
+        setGeneralNews(generalNewsResponse.data.organic_results || []);
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         setErrorGeneralNews(error.message);
       } finally {
         setLoadingGeneralNews(false);
@@ -39,23 +41,45 @@ const MarketUpdate = () => {
     fetchGeneralNews();
   }, [region]);
 
+  useEffect(() => {
+    const fetchFinanceData = async () => {
+      setLoadingFinanceData(true);
+      try {
+        const financeResponse = await axios.get(process.env.REACT_APP_MARKET_UPDATE_API_URL, {
+          params: {
+            api_key: process.env.REACT_APP_GOOGLE_NEWS_API_KEY,
+            engine: 'google_finance',
+            q: 'EUR-USD',
+          },
+        });
+
+        setFinanceData(financeResponse.data.organic_results || []);
+      } catch (error) {
+        console.log(error.message);
+        setErrorFinanceData(error.message);
+      } finally {
+        setLoadingFinanceData(false);
+      }
+    };
+
+    fetchFinanceData();
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoadingCompanyNews(true);
     try {
-      debugger
-          const companyNewsResponse = await axios.get('https://www.searchapi.io/api/v1/search', {
-            params: {
-              api_key: 'aezV3kcrvDVvspYnHhkDkywv', // Use environment variable for API key
-              engine: 'google_news',
-              q: symbol +' news',
-              location: region,
-              hl: 'en',
-            },
-          });
-          debugger
+      const companyNewsResponse = await axios.get(process.env.REACT_APP_MARKET_UPDATE_API_URL, {
+        params: {
+          api_key: process.env.REACT_APP_GOOGLE_NEWS_API_KEY,
+          engine: 'google_news',
+          q: symbol + ' news',
+          location: region,
+          hl: 'en',
+        },
+      });
 
-      setCompanyNews(companyNewsResponse.data.organic_results);
+      setCompanyNews(companyNewsResponse.data.organic_results || []);
     } catch (error) {
       setErrorCompanyNews(error.message);
     } finally {
@@ -68,9 +92,17 @@ const MarketUpdate = () => {
       <div className="bg-gray-100 py-4">
         <div className="container mx-auto flex justify-center">
           <div className="tabs flex space-x-4">
-            <button className="tab tab-bordered px-4 py-2">NSE</button>
-            <button className="tab tab-bordered px-4 py-2">BSE</button>
-            <button className="tab tab-bordered px-4 py-2">Global Indices</button>
+            {loadingFinanceData && <div>Loading...</div>}
+            {errorFinanceData && <div>Error: {errorFinanceData}</div>}
+            {!loadingFinanceData && !errorFinanceData && financeData && financeData.length > 0 && (
+              <>
+                {financeData.map((data, index) => (
+                  <button key={index} className="tab tab-bordered px-4 py-2">
+                    {data.title} {/* Adjust based on the API response structure */}
+                  </button>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -80,7 +112,7 @@ const MarketUpdate = () => {
             <h1 className="text-2xl font-bold mb-4 text-center">General News</h1>
             <div className="mb-8">
               {loadingGeneralNews && <div>Loading...</div>}
-              {errorGeneralNews && <div>Error: {errorGeneralNews}</div>}
+              {errorGeneralNews && <div>Error fetching general news: {errorGeneralNews}</div>}
               {!loadingGeneralNews && !errorGeneralNews && (
                 <div className="grid grid-cols-2 gap-4">
                   {generalNews.map((news, index) => (
@@ -100,23 +132,14 @@ const MarketUpdate = () => {
                 type="text" 
                 value={symbol} 
                 onChange={(e) => setSymbol(e.target.value)} 
-                placeholder="Enter stock symbol" 
+                placeholder="Enter Search Criteria" 
                 required 
                 className="border px-4 py-2 mb-2 w-full"
               />
-              <select 
-                value={region} 
-                onChange={(e) => setRegion(e.target.value)} 
-                className="border px-4 py-2 mb-2 w-full"
-              >
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                {/* Add more regions as needed */}
-              </select>
               <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">Get Company News</button>
             </form>
             {loadingCompanyNews && <div>Loading...</div>}
-            {errorCompanyNews && <div>Error: {errorCompanyNews}</div>}
+            {errorCompanyNews && <div>Error fetching company news: {errorCompanyNews}</div>}
             {!loadingCompanyNews && !errorCompanyNews && (
               <>
                 {companyNews.map((news, index) => (
@@ -132,76 +155,3 @@ const MarketUpdate = () => {
 };
 
 export default MarketUpdate;
-
-
-
-
-
-
-
-
-//// src/components/MarketUpdate.js
-//import React, { useState, useEffect } from 'react';
-//import axios from 'axios';
-
-//const MarketUpdate = () => {
-//  const [symbol, setSymbol] = useState('');
-//  const [data, setData] = useState(null);
-//  const [loading, setLoading] = useState(false);
-//  const [error, setError] = useState(null);
-
-//  const fetchData = async () => {
-//    setLoading(true);
-//    setError(null);
-//    try {
-//      const response = await axios.get('/api/market-update', {
-//        params: { symbol }
-//      });
-//      setData(response.data);
-//    } catch (error) {
-//      setError(error);
-//    } finally {
-//      setLoading(false);
-//    }
-//  };
-
-//  const handleSubmit = (event) => {
-//    event.preventDefault();
-//    fetchData();
-//  };
-
-//  return (
-//    <div className="flex flex-col min-h-screen">
-//      <div className="flex-grow">
-//        <div className="bg-gray-100 py-4">
-//          <div className="container mx-auto flex justify-center">
-//            <div className="tabs flex space-x-4">
-//              <button className="tab tab-bordered px-4 py-2">NSE</button>
-//              <button className="tab tab-bordered px-4 py-2">BSE</button>
-//              <button className="tab tab-bordered px-4 py-2">Global Indices</button>
-//            </div>
-//          </div>
-//        </div>
-//        <div className="container mx-auto py-8">
-//          <h1 className="text-2xl font-bold mb-4">Enter the Stock</h1>
-//          <form onSubmit={handleSubmit} className="mb-4">
-//            <input 
-//              type="text" 
-//              value={symbol} 
-//              onChange={(e) => setSymbol(e.target.value)} 
-//              placeholder="Enter stock symbol" 
-//              required 
-//              className="border px-4 py-2 mr-4"
-//            />
-//            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Get Data</button>
-//          </form>
-//          {loading && <div>Loading...</div>}
-//          {error && <div>Error: {error.message}</div>}
-//          {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-//        </div>
-//      </div>
-//    </div>
-//  );
-//};
-
-//export default MarketUpdate;
