@@ -422,36 +422,20 @@ const MyPortfolio = () => {
     const fetchPortfolioStocks = async () => {
       try {
         debugger
-        const response = await axios.post(backendGetPortfolio, {
-          userId: username,
-        });
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/GetPortfolio?userId=${username}`);
         console.log('Get Stocks Response:', response.data);
 
         if (response.data && response.data.stocks) {
           const fetchedStocks = response.data.stocks;
           console.log('Fetched Stocks:', fetchedStocks);
-          setStocks(
-            fetchedStocks.map((stock) => ({
-              [stockAttributes.STOCK_NAME]: stock.name,
-              [stockAttributes.NO_OF_SHARES]: stock.shares,
-              [stockAttributes.AVG_COST]: stock.purchasePrice,
-              [stockAttributes.STOCK_SYMBOL]: stock.symbol,
-              [stockAttributes.MARKET_PRICE]: 0,
-              [stockAttributes.DAILY_GAIN]: 0,
-              [stockAttributes.OVERALL_GAIN]: 0,
-              [stockAttributes.TOTAL_VALUE]: 0,
-              [stockAttributes.DAY_LOW]: 0,
-              [stockAttributes.DAY_HIGH]: 0,
-              [stockAttributes.DAILY_GAIN_PERCENT]: 0,
-              [stockAttributes.PREVIOUS_DAY_CLOSE]: 0,
-              [stockAttributes.FIFTY_TWO_WEEK_HIGH]: 0,
-              [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: '',
-              [stockAttributes.FIFTY_TWO_WEEK_LOW]: 0,
-              [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: '',
-            }))
-          );
+          setStocks(fetchedStocks.map(stock => ({
+            [stockAttributes.STOCK_NAME]: stock.name,
+            [stockAttributes.NO_OF_SHARES]: stock.shares,
+            [stockAttributes.AVG_COST]: stock.purchasePrice,
+            [stockAttributes.SYMBOL]: stock.symbol,
+          })));
 
-          fetchedStocks.forEach((stock) => fetchStockData(stock.symbol));
+          fetchedStocks.forEach(stock => fetchStockData(stock.symbol));
         }
 
         setShowAddStockForm(false);
@@ -462,45 +446,6 @@ const MyPortfolio = () => {
 
     fetchPortfolioStocks();
 
-    const fetchStockData = async (symbol) => {
-      try {
-        const response = await fetch(
-          `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
-        );
-        const data = await response.json();
-        if (data) {
-          console.log(`DATA for ${symbol}:`, data);
-          setStocks((prevStocks) =>
-            prevStocks.map((stock) =>
-              stock[stockAttributes.STOCK_SYMBOL] === symbol
-                ? {
-                    ...stock,
-                    [stockAttributes.MARKET_PRICE]: data.c,
-                    [stockAttributes.DAILY_GAIN]: ((data.d / data.c) * 100).toFixed(2),
-                    [stockAttributes.OVERALL_GAIN]: (
-                      (data.c - stock[stockAttributes.AVG_COST]) *
-                      stock[stockAttributes.NO_OF_SHARES]
-                    ).toFixed(2),
-                    [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
-                    [stockAttributes.DAY_LOW]: data.l,
-                    [stockAttributes.DAY_HIGH]: data.h,
-                    [stockAttributes.DAILY_GAIN_PERCENT]: data.dp,
-                    [stockAttributes.PREVIOUS_DAY_CLOSE]: data.pc,
-                    [stockAttributes.FIFTY_TWO_WEEK_HIGH]: data["52WeekHigh"],
-                    [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: data["52WeekHighDate"],
-                    [stockAttributes.FIFTY_TWO_WEEK_LOW]: data["52WeekLow"],
-                    [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: data["52WeekLowDate"],
-                  }
-                : stock
-            )
-          );
-        } else {
-          console.log('Error fetching data', data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
 
     const intervalId = setInterval(() => {
       stocks.forEach((stock) => fetchStockData(stock[stockAttributes.STOCK_SYMBOL]));
@@ -508,6 +453,93 @@ const MyPortfolio = () => {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  //const fetchStockData = async (symbol) => {
+  //  try {
+  //    debugger
+  //    const response = await fetch(
+  //      `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
+  //    );
+  //    debugger
+  //    const data = await response.json();
+  //    if (data) {
+  //      console.log(`DATA for ${symbol}:`, data);
+  //      setStocks((prevStocks) =>
+  //        prevStocks.map((stock) =>
+  //          stock[stockAttributes.STOCK_SYMBOL] === symbol
+  //            ? {
+  //                ...stock,
+  //                [stockAttributes.MARKET_PRICE]: data.c,
+  //                [stockAttributes.DAILY_GAIN]: ((data.d / data.c) * 100).toFixed(2),
+  //                [stockAttributes.OVERALL_GAIN]: (
+  //                  (data.c - stock[stockAttributes.AVG_COST]) *
+  //                  stock[stockAttributes.NO_OF_SHARES]
+  //                ).toFixed(2),
+  //                [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+  //                [stockAttributes.DAY_LOW]: data.l,
+  //                [stockAttributes.DAY_HIGH]: data.h,
+  //                [stockAttributes.DAILY_GAIN_PERCENT]: data.dp,
+  //                [stockAttributes.PREVIOUS_DAY_CLOSE]: data.pc,
+  //                [stockAttributes.FIFTY_TWO_WEEK_HIGH]: data["52WeekHigh"],
+  //                [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: data["52WeekHighDate"],
+  //                [stockAttributes.FIFTY_TWO_WEEK_LOW]: data["52WeekLow"],
+  //                [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: data["52WeekLowDate"],
+  //              }
+  //            : stock
+  //        )
+  //      );
+  //    } else {
+  //      console.log('Error fetching data', data);
+  //    }
+  //  } catch (error) {
+  //    console.error('Error fetching data:', error);
+  //  }
+  //};
+
+  const fetchStockData = async (symbol) => {
+    try {
+      const response = await axios.get(
+        `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
+      );
+      const data = response.data;
+  
+      if (data) {
+        console.log(`DATA for ${symbol}:`, data);
+  
+        // Adjust calculations based on your specific requirements
+        const updatedStocks = stocks.map((stock) =>
+          stock[stockAttributes.STOCK_SYMBOL] === symbol
+            ? {
+                ...stock,
+                [stockAttributes.MARKET_PRICE]: data.c,
+                [stockAttributes.DAILY_GAIN]: data.d.toFixed(2),
+                [stockAttributes.OVERALL_GAIN]: (
+                  (data.c - stock[stockAttributes.AVG_COST]) *
+                  stock[stockAttributes.NO_OF_SHARES]
+                ).toFixed(2),
+                [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                [stockAttributes.DAY_LOW]: data.l,
+                [stockAttributes.DAY_HIGH]: data.h,
+                [stockAttributes.DAILY_GAIN_PERCENT]: data.dp,
+                [stockAttributes.PREVIOUS_DAY_CLOSE]: data.pc,
+                [stockAttributes.FIFTY_TWO_WEEK_HIGH]: data["52WeekHigh"],
+                [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: data["52WeekHighDate"],
+                [stockAttributes.FIFTY_TWO_WEEK_LOW]: data["52WeekLow"],
+                [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: data["52WeekLowDate"],
+              }
+            : stock
+        );
+  
+        setStocks(updatedStocks);
+      } else {
+        console.log('Error fetching data', data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  
+
 
   const handleAddStock = (e) => {
     e.preventDefault();
