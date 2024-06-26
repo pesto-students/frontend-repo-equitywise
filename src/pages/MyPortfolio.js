@@ -424,7 +424,7 @@ const MyPortfolio = () => {
         debugger
         const response = await axios.post(`https://backend-repo-equitywise.onrender.com/GetPortfolio?userId=${username}`);
         console.log('Get Stocks Response:', response.data);
-
+debugger
         if (response.data && response.data.stocks) {
           const fetchedStocks = response.data.stocks;
           console.log('Fetched Stocks:', fetchedStocks);
@@ -432,9 +432,9 @@ const MyPortfolio = () => {
             [stockAttributes.STOCK_NAME]: stock.name,
             [stockAttributes.NO_OF_SHARES]: stock.shares,
             [stockAttributes.AVG_COST]: stock.purchasePrice,
-            [stockAttributes.SYMBOL]: stock.symbol,
+            [stockAttributes.STOCK_SYMBOL]: stock.symbol,
           })));
-
+          debugger
           fetchedStocks.forEach(stock => fetchStockData(stock.symbol));
         }
 
@@ -529,9 +529,13 @@ const MyPortfolio = () => {
         //      }
         //    : stock
         //);
+
+        //**//Update here
         setStocks(prevStocks => prevStocks.map(stock => 
-          stock[stockAttributes.SYMBOL] === symbol 
-          ? { ...stock, [stockAttributes.MARKET_PRICE]: data.c, [stockAttributes.DAILY_GAIN]: data.d }
+          stock[stockAttributes.STOCK_SYMBOL] === symbol 
+          ? { ...stock, 
+            [stockAttributes.MARKET_PRICE]: data.c,
+            [stockAttributes.DAILY_GAIN]: data.d }
           : stock
         ));
         debugger
@@ -546,36 +550,106 @@ const MyPortfolio = () => {
   
 
 
-  const handleAddStock = (e) => {
+  //const handleAddStock = (e) => {
+  //  e.preventDefault();
+  //  setStocks([...stocks, newStock]);
+  //  setNewStock({
+  //    [stockAttributes.STOCK_SYMBOL]: '',
+  //    [stockAttributes.STOCK_NAME]: '',
+  //    [stockAttributes.NO_OF_SHARES]: 0,
+  //    [stockAttributes.AVG_COST]: 0,
+  //  });
+  //  setShowAddStockForm(false);
+  //};
+
+  const handleAddStock = async (e) => {
+    debugger;
     e.preventDefault();
-    setStocks([...stocks, newStock]);
-    setNewStock({
-      [stockAttributes.STOCK_SYMBOL]: '',
-      [stockAttributes.STOCK_NAME]: '',
-      [stockAttributes.NO_OF_SHARES]: 0,
-      [stockAttributes.AVG_COST]: 0,
-    });
-    setShowAddStockForm(false);
+    console.log('newStock:', newStock); // Log newStock to check its values
+
+    try {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`, {
+        symbol: newStock[stockAttributes.STOCK_SYMBOL],
+        name: newStock[stockAttributes.STOCK_NAME],
+        shares: newStock[stockAttributes.NO_OF_SHARES],
+        purchasePrice: newStock[stockAttributes.AVG_COST]
+      });
+
+      console.log('Stocks Insert Response:', response.data);
+
+      if (response.data && response.data.stocks) {
+        fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+      }
+
+      setStocks([...stocks, newStock]);
+      setNewStock({
+        [stockAttributes.STOCK_NAME]: '',
+        [stockAttributes.STOCK_SYMBOL]: '',
+        [stockAttributes.NO_OF_SHARES]: 0,
+        [stockAttributes.AVG_COST]: 0,
+      });
+
+      setShowAddStockForm(false);
+    } catch (error) {
+      console.log('Stock insert error:', error.response ? error.response.data : error.message);
+    }
   };
 
-  const handleDeleteStock = (symbol) => {
-    setStocks(stocks.filter((stock) => stock[stockAttributes.STOCK_SYMBOL] !== symbol));
+  const handleDeleteStock = async (symbol) => {
+    try {
+      debugger
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/DeleteStockByStockName?userId=${username}&symbol=${symbol}`);
+        console.log('Stock delete response:', response.data);
+        debugger;
+        if (response.data && response.status === 200) {
+          setStocks(stocks.filter(stock => stock.symbol !== symbol));
+          
+        fetchStockData(symbol);
+        } else {
+          console.log('Failed to delete stock:', response.data);
+        }
+      } catch (error) {
+        console.log('Error deleting stock:', error);
+      }
   };
 
   const handleEditStock = (stock) => {
     setEditingStock(stock);
   };
 
-  const handleUpdateStock = (e) => {
+  //const handleUpdateStock = (e) => {
+  //  e.preventDefault();
+  //  setStocks((stocks) =>
+  //    stocks.map((stock) =>
+  //      stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL]
+  //        ? editingStock
+  //        : stock
+  //    )
+  //  );
+  //  setEditingStock(null);
+  //};
+
+  const handleUpdateStock = async (e) => {
     e.preventDefault();
-    setStocks((stocks) =>
-      stocks.map((stock) =>
-        stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL]
-          ? editingStock
-          : stock
-      )
-    );
-    setEditingStock(null);
+    try {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`, {
+        symbol: editingStock[stockAttributes.STOCK_SYMBOL],
+        name: editingStock[stockAttributes.STOCK_NAME],
+        shares: editingStock[stockAttributes.NO_OF_SHARES],
+        purchasePrice: editingStock[stockAttributes.AVG_COST]
+      });
+
+      console.log('Stock Update Response:', response.data);
+      debugger;
+      if (response.data && response.data.stocks) {
+        setStocks(stocks.map(stock => (stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL] ? editingStock : stock)));
+      }
+      debugger;
+      fetchStockData(editingStock.symbol);
+      setEditingStock(null);
+    } catch (error) {
+      console.log('Stock update error:', error.response ? error.response.data : error.message);
+    }
   };
 
   const handleStockSymbolInputChange = async (e) => {
