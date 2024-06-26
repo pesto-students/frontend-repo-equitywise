@@ -1,6 +1,8 @@
 // src/Components/Footer.js
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLinkedin, faFacebook, faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
 function Footer() {
     return (
@@ -30,9 +32,21 @@ function Footer() {
                 <div className="text-center md:text-center md:w-1/3">
                     <h3 className="text-xl font-bold mb-2">Follow Us</h3>
                     <ul className="flex justify-center md:justify-center space-x-4">
-                        <li><a href="#linkedin" className="hover:underline">LinkedIn</a></li>
-                        <li><a href="#facebook" className="hover:underline">Facebook</a></li>
-                        <li><a href="#twitter" className="hover:underline">Twitter</a></li>
+                        <li>
+                            <a href="https://www.linkedin.com" className="hover:underline" target="_blank" rel="noopener noreferrer">
+                                <FontAwesomeIcon icon={faLinkedin} size="2x" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.facebook.com" className="hover:underline" target="_blank" rel="noopener noreferrer">
+                                <FontAwesomeIcon icon={faFacebook} size="2x" />
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://x.com" className="hover:underline" target="_blank" rel="noopener noreferrer">
+                                <FontAwesomeIcon icon={faXTwitter} size="2x" />
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

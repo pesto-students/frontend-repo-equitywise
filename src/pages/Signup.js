@@ -7,6 +7,11 @@ import image from '../assets/images/signup.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+//// API's
+//const backendFindUserUrl = process.env.REACT_APP_BACKEND_FIND_USER_URL;
+//const backendSignupUrl = process.env.REACT_APP_BACKEND_SIGNUP_URL;
+//const googleClientId=process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
 const Signup = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +47,8 @@ const Signup = () => {
     );
   };
 
-  const handleEmailSignup = () => {
+//*// Is the use of async fine since we db is being accessed to check if the email is used earlier
+  const handleEmailSignup = async () => {
     console.log('handleEmailSignup called');
 
     if (!validateEmail(email)) {
@@ -50,6 +56,23 @@ const Signup = () => {
       console.log('Invalid email address');
       return;
     }
+//*// Other code has a try block
+//    try {
+//      const response = await fetch(backendFindUserUrl, {
+//        method: 'POST',
+//        headers: {
+//          'Content-Type': 'application/json'
+//        },
+//        body: JSON.stringify({ emailid: email })
+//      });
+
+//      if (response.status === 200) {
+//        setErrorMessage('Email already exists');
+//        setEmail('');
+//        setPassword('');
+//        setConfirmPassword('');
+//        return;
+//      }
 
     if (!validatePassword(password)) {
       setErrorMessage('Password must contain at least one special character, one capital letter, and one number');
@@ -64,18 +87,36 @@ const Signup = () => {
     }
 
     console.log('Validation passed. Making API request...');
-    axios.post('https://backend-repo-equitywise.onrender.com/signup', {
-      emailid: email,
-      password: password
-    })
-    .then(function (response) {
-      console.log('API response:', response);
-      onSuccess(response);
-    })
-    .catch(function (error) {
-      console.log('API error:', error);
+
+  //  axios.post('https://backend-repo-equitywise.onrender.com/signup', {
+  //    emailid: email,
+  //    password: password
+  //  })
+  //  .then(function (response) {
+  //    console.log('API response:', response);
+  //    onSuccess(response);
+  //  })
+  //  .catch(function (error) {
+  //    console.log('API error:', error);
+  //    onFailure(error);
+  //  });
+  //};
+
+  const signupFunction = async () => {
+    try {
+      const signupResponse = await axios.post('https://backend-repo-equitywise.onrender.com/signup', {
+        emailid: email,
+        password: password
+      });
+  
+      console.log('API response:', signupResponse.data);
+      onSuccess(signupResponse.data); 
+  
+    } catch (error) {
+      console.error('Signup error:', error);
       onFailure(error);
-    });
+    }
+  }
   };
 
   return (
