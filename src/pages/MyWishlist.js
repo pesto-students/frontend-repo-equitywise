@@ -3,6 +3,7 @@ import axios from 'axios';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesWishlist, stockAttributes } from '../Data/dataItems';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { useUser } from '../context/UserContext';
 
 const backendGetWishlist = process.env.REACT_APP_BACKEND_GETWISHLIST_API_URL;
 
@@ -18,31 +19,27 @@ const MyWishlist = () => {
   });
   const [showAddStockForm, setShowAddStockForm] = useState(false);
   const [symbolSuggestions, setSymbolSuggestions] = useState([]);
-  const apiKeyFinnhub = process.env.REACT_APP_FINNHUB_API_KEY; // Define apiKey here
+  const apiKeyFinnhub = process.env.REACT_APP_FINNHUB_API_KEY;
 
   const displayColumns = displayTablesWishlist[activeMenu] || [];
+
+  const { username } = useUser();
 
   useEffect(() => {
     const fetchWishlistStocks = async () => {
       try {
-        const response = await axios.post(backendGetWishlist, {
-          userId: 'test123@gmail.com',
-        });
-        console.log('Get Stocks Response:', response.data);
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/GetWishlist?userId=${username}`);
+        console.log('Get Stocks Response for Wishlist:', response.data);
 
         if (response.data && response.data.stocks) {
           const fetchedStocks = response.data.stocks;
-          console.log('Fetched Stocks:', fetchedStocks);
+          console.log('Stocks Fetched for Wishlist from db:', fetchedStocks);
           setStocks(
             fetchedStocks.map((stock) => ({
               [stockAttributes.STOCK_NAME]: stock.name,
               [stockAttributes.NO_OF_SHARES]: stock.shares,
               [stockAttributes.AVG_COST]: stock.purchasePrice,
               [stockAttributes.STOCK_SYMBOL]: stock.symbol,
-              [stockAttributes.MARKET_PRICE]: 0,
-              [stockAttributes.DAILY_GAIN]: 0,
-              [stockAttributes.OVERALL_GAIN]: 0,
-              [stockAttributes.TOTAL_VALUE]: 0,
             }))
           );
 
@@ -51,43 +48,11 @@ const MyWishlist = () => {
 
         setShowAddStockForm(false);
       } catch (error) {
-        console.log('Error getting stocks:', error);
+        console.log('Error adding stocks to Wishlist:', error);
       }
     };
 
     fetchWishlistStocks();
-
-    const fetchStockData = async (symbol) => {
-      try {
-        const response = await fetch(
-          `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
-        );
-        const data = await response.json();
-        if (data) {
-          console.log(`DATA for ${symbol}:`, data);
-          setStocks((prevStocks) =>
-            prevStocks.map((stock) =>
-              stock[stockAttributes.STOCK_SYMBOL] === symbol
-                ? {
-                    ...stock,
-                    [stockAttributes.MARKET_PRICE]: data.c,
-                    [stockAttributes.DAILY_GAIN]: ((data.d / data.c) * 100).toFixed(2),
-                    [stockAttributes.OVERALL_GAIN]: (
-                      (data.c - stock[stockAttributes.AVG_COST]) *
-                      stock[stockAttributes.NO_OF_SHARES]
-                    ).toFixed(2),
-                    [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
-                  }
-                : stock
-            )
-          );
-        } else {
-          console.log('Error fetching data', data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
 
     const intervalId = setInterval(() => {
       stocks.forEach((stock) => fetchStockData(stock[stockAttributes.STOCK_SYMBOL]));
@@ -96,55 +61,126 @@ const MyWishlist = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleAddStock = (e) => {
-    e.preventDefault();
-    setStocks([...stocks, newStock]);
-    setNewStock({
-      [stockAttributes.STOCK_NAME]: '',
-      [stockAttributes.STOCK_SYMBOL]: '',
-      [stockAttributes.NO_OF_SHARES]: 0,
-      [stockAttributes.AVG_COST]: 0,
-    });
-    setShowAddStockForm(false);
+  const fetchStockData = async (symbol) => {
+    try {
+      const response = await fetch(
+        `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
+      );
+      const data = await response.data;
+      
+      if (data) {
+        console.log(`DATA for ${symbol}:`, data);
+
+        setStocks(prevStocks =>
+          prevStocks.map((stock) =>
+            stock[stockAttributes.STOCK_SYMBOL] === symbol
+              ? {
+                  ...stock,
+                  [stockAttributes.MARKET_PRICE]: data.c,
+                  [stockAttributes.DAILY_GAIN]: data.d,
+                  [stockAttributes.DAILY_GAIN_PERCENT]: data.dp.toFixed(2),
+                  [stockAttributes.OVERALL_GAIN]: (
+                    (data.c - stock[stockAttributes.AVG_COST]) *
+                    stock[stockAttributes.NO_OF_SHARES]
+                  ).toFixed(2),
+                  [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                }
+              : stock
+          )
+        );
+      } else {
+        console.log('Error fetching Wishlist data', data);
+      }
+    } catch (error) {
+      console.error('Error fetching Wishlist data:', error);
+    }
   };
 
-  const handleDeleteStock = (symbol) => {
-    setStocks(stocks.filter((stock) => stock[stockAttributes.STOCK_SYMBOL] !== symbol));
+  const handleAddStock = async (e) => {
+    debugger;
+    e.preventDefault();
+    console.log('newStock for Wishlist:', newStock); // Log newStock to check its values
+
+    try {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`, {
+        symbol: newStock[stockAttributes.STOCK_SYMBOL],
+        name: newStock[stockAttributes.STOCK_NAME],
+        shares: newStock[stockAttributes.NO_OF_SHARES],
+        purchasePrice: newStock[stockAttributes.AVG_COST]
+      });
+
+      console.log('Stocks Insert Response:', response.data);
+
+      if (response.data && response.data.stocks) {
+        fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+      }
+
+      setStocks([...stocks, newStock]);
+      setNewStock({
+        [stockAttributes.STOCK_NAME]: '',
+        [stockAttributes.STOCK_SYMBOL]: '',
+        [stockAttributes.NO_OF_SHARES]: 0,
+        [stockAttributes.AVG_COST]: 0,
+      });
+
+      setShowAddStockForm(false);
+    } catch (error) {
+      console.log('Stock insert error:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const handleDeleteStock = async (symbol) => {
+    try {
+      debugger
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/DeleteStockByStockName?userId=${username}&symbol=${symbol}`);
+        console.log('Stock delete response:', response.data);
+        debugger;
+        if (response.data && response.status === 200) {
+          setStocks(stocks.filter(stock => stock.symbol !== symbol));
+          
+        fetchStockData(symbol);
+        } else {
+          console.log('Failed to delete stock:', response.data);
+        }
+      } catch (error) {
+        console.log('Error deleting stock:', error);
+      }
   };
 
   const handleEditStock = (stock) => {
     setEditingStock(stock);
   };
 
-  const handleUpdateStock = (e) => {
+  const handleUpdateStock = async (e) => {
     e.preventDefault();
-    setStocks((prevStocks) =>
-      prevStocks.map((stock) =>
-        stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL]
-          ? editingStock
-          : stock
-      )
-    );
-    setEditingStock(null);
-  };
-
-  const handleSymbolSelection = (symbol) => {
-    const selectedSuggestion = symbolSuggestions.find((suggestion) => suggestion.symbol === symbol);
-    if (selectedSuggestion) {
-      setNewStock({
-        ...newStock,
-        [stockAttributes.STOCK_SYMBOL]: symbol,
-        [stockAttributes.STOCK_NAME]: selectedSuggestion.description,
+    try {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`, {
+        symbol: editingStock[stockAttributes.STOCK_SYMBOL],
+        name: editingStock[stockAttributes.STOCK_NAME],
+        shares: editingStock[stockAttributes.NO_OF_SHARES],
+        purchasePrice: editingStock[stockAttributes.AVG_COST]
       });
+
+      console.log('Stock Update Response:', response.data);
+      debugger;
+      if (response.data && response.data.stocks) {
+        setStocks(stocks.map(stock => (stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL] ? editingStock : stock)));
+      }
+      debugger;
+      fetchStockData(editingStock.symbol);
+      setEditingStock(null);
+    } catch (error) {
+      console.log('Stock update error:', error.response ? error.response.data : error.message);
     }
-    setSymbolSuggestions([]); // Clear suggestions after selection
   };
 
   const handleStockSymbolInputChange = async (e) => {
     const userInput = e.target.value;
+    console.log('User Input:', userInput);
     setNewStock({ ...newStock, [stockAttributes.STOCK_SYMBOL]: userInput });
     if (userInput.length >= 2) {
       try {
+        console.log('Making API Call');
         const response = await axios.get(
           `https://finnhub.io/api/v1/stock/symbol?exchange=US&q=${userInput}&token=${apiKeyFinnhub}`
         );
@@ -163,6 +199,18 @@ const MyWishlist = () => {
       console.log('User Input too short for API call');
       setSymbolSuggestions([]);
     }
+  };
+
+  const handleSymbolSelection = (symbol) => {
+    const selectedSuggestion = symbolSuggestions.find((suggestion) => suggestion.symbol === symbol);
+    if (selectedSuggestion) {
+      setNewStock({
+        ...newStock,
+        [stockAttributes.STOCK_SYMBOL]: symbol,
+        [stockAttributes.STOCK_NAME]: selectedSuggestion.description,
+      });
+    }
+    setSymbolSuggestions([]); // Clear suggestions after selection
   };
 
   const totals = stocks.reduce(
@@ -203,23 +251,24 @@ const MyWishlist = () => {
                   key={`${scrip[stockAttributes.STOCK_SYMBOL]}${val}${index}`}
                   className={`h-8 pl-3 pr-3 ${
                     val === stockAttributes.STOCK_NAME ? 'text-left' : ''
-                  } ${val === stockAttributes.STOCK_SYMBOL ? 'text-center' : ''} ${
-                    val === stockAttributes.NO_OF_SHARES ? 'text-right' : ''
-                  } ${
-                    val === stockAttributes.AVG_COST ? 'text-right' : ''
-                  } ${
-                    val === stockAttributes.MARKET_PRICE ? 'text-right' : ''
-                  } ${
-                    val === stockAttributes.DAILY_GAIN ? 'text-right' : ''
-                  } ${
-                    val === stockAttributes.OVERALL_GAIN ? 'text-right' : ''
-                  }`}
+                  } ${val === stockAttributes.STOCK_SYMBOL ? 'text-center' : ''
+                  } ${val === stockAttributes.NO_OF_SHARES ? 'text-right' : ''
+                  } ${val === stockAttributes.AVG_COST ? 'text-right' : ''
+                  } ${val === stockAttributes.MARKET_PRICE ? 'text-right' : ''
+                  } ${val === stockAttributes.DAILY_GAIN ? 'text-right' : ''
+                  } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-right' : ''
+                  } ${val === stockAttributes.OVERALL_GAIN ? 'text-right' : ''
+                  }
+                    `}
                 >
                   {scrip[val]}
                 </td>
               ))}
               <td className="h-8 pl-3 pr-3 text-center">
-                <button onClick={() => handleEditStock(scrip)} className="mr-2 p-2 text-green-500 rounded">
+                <button
+                  onClick={() => handleEditStock(scrip)}
+                  className="mr-2 p-2 text-green-500 rounded"
+                >
                   <FaEdit />
                 </button>
                 <button
@@ -233,7 +282,6 @@ const MyWishlist = () => {
           ))}
         </tbody>
       </table>
-
       <div className="mb-4 p-4 bg-gray-100 rounded">
         <h2 className="text-xl font-bold mb-2">Summary</h2>
         <table className="w-full mb-4">
@@ -267,76 +315,109 @@ const MyWishlist = () => {
 
       {showAddStockForm && (
         <form onSubmit={handleAddStock} className="mb-4">
-          <div>
-            <label className="block">Stock Symbol</label>
-            <input
-              type="text"
-              value={newStock[stockAttributes.STOCK_SYMBOL]}
-              onChange={handleStockSymbolInputChange}
-              className="w-full border p-2 mb-2"
-            />
+        <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+          <label htmlFor="stock-symbol" className="mr-10" whitespace-nowrap>
+            Stock Symbol
+          </label>
+          <input
+            id="stock-symbol"
+            type="text"
+            placeholder="Stock Symbol"
+            value={newStock[stockAttributes.STOCK_SYMBOL]}
+            onChange={handleStockSymbolInputChange}
+            required
+            className="p-2 border rounded w-full"
+          />
+        </div>
             {symbolSuggestions.length > 0 && (
-              <ul className="border p-2">
-                {symbolSuggestions.map((suggestion, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleSymbolSelection(suggestion.symbol)}
-                    className="cursor-pointer hover:bg-gray-200"
-                  >
-                    {suggestion.symbol} - {suggestion.description}
-                  </li>
-                ))}
-              </ul>
+              <div className="mb-2">
+                <p>Suggestions:</p>
+                <ul>
+                  {symbolSuggestions.map((symbol, index) => (
+                    <li key={index}>
+                      <button
+                        type="button"
+                        onClick={() => handleSymbolSelection(symbol.symbol)}
+                        className="text-blue-500"
+                      >
+                        {symbol.symbol} - {symbol.description}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </div>
-          <div>
-            <label className="block">Stock Name</label>
-            <input
-              type="text"
-              value={newStock[stockAttributes.STOCK_NAME]}
-              onChange={(e) =>
-                setNewStock({ ...newStock, [stockAttributes.STOCK_NAME]: e.target.value })
-              }
-              className="w-full border p-2 mb-2"
-            />
-          </div>
-          <div>
-            <label className="block">Number of Shares</label>
-            <input
-              type="number"
-              value={newStock[stockAttributes.NO_OF_SHARES]}
-              onChange={(e) =>
-                setNewStock({ ...newStock, [stockAttributes.NO_OF_SHARES]: e.target.value })
-              }
-              className="w-full border p-2 mb-2"
-            />
-          </div>
-          <div>
-            <label className="block">Average Cost</label>
-            <input
-              type="number"
-              value={newStock[stockAttributes.AVG_COST]}
-              onChange={(e) =>
-                setNewStock({ ...newStock, [stockAttributes.AVG_COST]: e.target.value })
-              }
-              className="w-full border p-2 mb-2"
-            />
-          </div>
-          <button type="submit" className="bg-blue-500 text-white p-2">
-            Add Stock
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowAddStockForm(false)}
-            className="ml-2 bg-red-500 text-white p-2"
-          >
-            Cancel
-          </button>
-        </form>
+            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+              <label htmlFor="stock-name" className="mr-10">
+                Stock Name
+              </label>
+              <input
+                id="stock-name"
+                type="text"
+                placeholder="Stock Name"
+                value={newStock[stockAttributes.STOCK_NAME]}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, [stockAttributes.STOCK_NAME]: e.target.value })
+                }
+                required
+                className="p-2 border rounded w-full"
+              />
+            </div>
+            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+              <label htmlFor="no-of-shares" className="mr-8">
+                No. of Shares
+              </label>
+              <input
+                id="no-of-shares"
+                type="number"
+                placeholder="No. of Shares"
+                value={newStock[stockAttributes.NO_OF_SHARES]}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value) })
+                }
+                required
+                className="p-2 border rounded w-full"
+              />
+            </div>
+            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+              <label htmlFor="avg-cost" className="mr-8">
+                Average Cost
+              </label>
+              <input
+                id="avg-cost"
+                type="number"
+                placeholder="Average Cost"
+                value={newStock[stockAttributes.AVG_COST]}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
+                }
+                required
+                className="p-2 border rounded w-full"
+              />
+            </div>
+            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+              Add Stock
+            </button>
+      </form>
       )}
 
-      {editingStock && (
+{editingStock && (
         <form onSubmit={handleUpdateStock} className="mb-4">
+          <div className="mb-2">
+            <label htmlFor="edit-stock-symbol" className="block mb-1">
+              Stock Symbol
+            </label>
+            <input
+              id="edit-stock-symbol"
+              type="text"
+              value={editingStock[stockAttributes.STOCK_SYMBOL]}
+              onChange={(e) =>
+                setEditingStock({ ...editingStock, [stockAttributes.STOCK_SYMBOL]: e.target.value })
+              }
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>
           <div className="mb-2">
             <label htmlFor="edit-stock-name" className="block mb-1">
               Stock Name
@@ -361,10 +442,7 @@ const MyWishlist = () => {
               type="number"
               value={editingStock[stockAttributes.NO_OF_SHARES]}
               onChange={(e) =>
-                setEditingStock({
-                  ...editingStock,
-                  [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value),
-                })
+                setEditingStock({ ...editingStock, [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value) })
               }
               required
               className="p-2 border rounded w-full"
@@ -379,10 +457,7 @@ const MyWishlist = () => {
               type="number"
               value={editingStock[stockAttributes.AVG_COST]}
               onChange={(e) =>
-                setEditingStock({
-                  ...editingStock,
-                  [stockAttributes.AVG_COST]: parseFloat(e.target.value),
-                })
+                setEditingStock({ ...editingStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
               }
               required
               className="p-2 border rounded w-full"
