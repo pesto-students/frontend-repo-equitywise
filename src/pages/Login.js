@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
 import GoogleLoginComponent from '../Components/GoogleAuth';
+
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -15,8 +16,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); 
-
   const { setUsername } = useUser();
+
   const onSuccess = (response) => {
     console.log('Login Success:', response);
     setUsername(email);
@@ -43,8 +44,7 @@ const Login = () => {
       emailid: email,
       password: password
     })
-    .then(function (response) {
-      debugger;
+    .then((response) => {
       console.log('API response:', response);
       if (response.status === 201 || response.status === 200) {
         onSuccess(response);
@@ -52,8 +52,7 @@ const Login = () => {
         setErrorMessage('Invalid email or password');
       }
     })
-    .catch(function (error) {
-      debugger;
+    .catch((error) => {
       console.log('API error:', error);
       onFailure(error);
     });
@@ -101,9 +100,9 @@ const Login = () => {
               <p>Not registered with Equity Wise? <Link to="/signup" className="text-blue-500">Sign Up here</Link></p>
             </div>
             <div className='flex justify-center'>
-            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-               <GoogleLoginComponent/>
-            </GoogleOAuthProvider>
+              <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <GoogleLoginComponent login={true} />
+              </GoogleOAuthProvider>
             </div>
           </div>
         </div>
