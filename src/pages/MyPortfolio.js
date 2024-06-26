@@ -396,6 +396,7 @@ import axios from 'axios';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesPortfolio, stockAttributes } from '../Data/dataItems';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { useUser } from '../context/UserContext';
 
 const backendGetPortfolio = process.env.REACT_APP_BACKEND_GETPORTFOLIO_API_URL;
 
@@ -415,11 +416,14 @@ const MyPortfolio = () => {
 
   const displayColumns = displayTablesPortfolio[activeMenu] || [];
 
+  const { username } = useUser();
+
   useEffect(() => {
     const fetchPortfolioStocks = async () => {
       try {
+        debugger
         const response = await axios.post(backendGetPortfolio, {
-          userId: 'test123@gmail.com',
+          userId: username,
         });
         console.log('Get Stocks Response:', response.data);
 

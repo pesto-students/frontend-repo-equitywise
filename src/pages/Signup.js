@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom'; 
 import image from '../assets/images/signup.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
-//// API's
-//const backendFindUserUrl = process.env.REACT_APP_BACKEND_FIND_USER_URL;
-//const backendSignupUrl = process.env.REACT_APP_BACKEND_SIGNUP_URL;
-//const googleClientId=process.env.REACT_APP_GOOGLE_CLIENT_ID;
-
+import GoogleLoginComponent from '../Components/GoogleAuth';
+import validator from 'validator';
 const Signup = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +29,7 @@ const Signup = () => {
   };
 
   const validateEmail = (email) => {
-    return email.includes('@');
+    return validator.isEmail(email);
   };
 
   const validatePassword = (password) => {
@@ -47,76 +43,54 @@ const Signup = () => {
     );
   };
 
-//*// Is the use of async fine since we db is being accessed to check if the email is used earlier
   const handleEmailSignup = async () => {
     console.log('handleEmailSignup called');
 
     if (!validateEmail(email)) {
       setErrorMessage('Please enter a valid email address');
       console.log('Invalid email address');
-      return;
+      //return;
     }
-//*// Other code has a try block
-//    try {
-//      const response = await fetch(backendFindUserUrl, {
-//        method: 'POST',
-//        headers: {
-//          'Content-Type': 'application/json'
-//        },
-//        body: JSON.stringify({ emailid: email })
-//      });
-
-//      if (response.status === 200) {
-//        setErrorMessage('Email already exists');
-//        setEmail('');
-//        setPassword('');
-//        setConfirmPassword('');
-//        return;
-//      }
-
-    if (!validatePassword(password)) {
-      setErrorMessage('Password must contain at least one special character, one capital letter, and one number');
-      console.log('Invalid password format');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
-      console.log('Passwords do not match');
-      return;
-    }
-
-    console.log('Validation passed. Making API request...');
-
-  //  axios.post('https://backend-repo-equitywise.onrender.com/signup', {
-  //    emailid: email,
-  //    password: password
-  //  })
-  //  .then(function (response) {
-  //    console.log('API response:', response);
-  //    onSuccess(response);
-  //  })
-  //  .catch(function (error) {
-  //    console.log('API error:', error);
-  //    onFailure(error);
-  //  });
-  //};
-
-  const signupFunction = async () => {
     try {
+      debugger;
+      const response = await fetch('https://backend-repo-equitywise.onrender.com/FindUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ emailid: email })
+      });
+debugger;
+      if (response.status === 200) {
+        setErrorMessage('Email already exists');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        setErrorMessage('Password must contain at least one special character, one capital letter, and one number');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match');
+        return;
+      }
+
       const signupResponse = await axios.post('https://backend-repo-equitywise.onrender.com/signup', {
         emailid: email,
         password: password
       });
-  
+
       console.log('API response:', signupResponse.data);
-      onSuccess(signupResponse.data); 
-  
+      onSuccess(signupResponse.data); // Assuming API response includes user data for login
+
     } catch (error) {
       console.error('Signup error:', error);
       onFailure(error);
     }
-  }
   };
 
   return (
@@ -177,9 +151,9 @@ const Signup = () => {
               Sign Up
             </button>
             <div className='flex justify-center'>
-              <GoogleOAuthProvider clientId="233735191819-86l6aehhc334ht83jtbdcun7lmkcdid6.apps.googleusercontent.com">
-                <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} cookiePolicy={'single_host_origin'} />
-              </GoogleOAuthProvider>
+            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+               <GoogleLoginComponent />
+            </GoogleOAuthProvider>
             </div>
           </div>
 
