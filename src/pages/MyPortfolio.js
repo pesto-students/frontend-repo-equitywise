@@ -502,35 +502,40 @@ const MyPortfolio = () => {
         `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
       );
       const data = response.data;
-  
+  debugger
       if (data) {
         console.log(`DATA for ${symbol}:`, data);
-  
+        debugger
         // Adjust calculations based on your specific requirements
-        const updatedStocks = stocks.map((stock) =>
-          stock[stockAttributes.STOCK_SYMBOL] === symbol
-            ? {
-                ...stock,
-                [stockAttributes.MARKET_PRICE]: data.c,
-                [stockAttributes.DAILY_GAIN]: data.d.toFixed(2),
-                [stockAttributes.OVERALL_GAIN]: (
-                  (data.c - stock[stockAttributes.AVG_COST]) *
-                  stock[stockAttributes.NO_OF_SHARES]
-                ).toFixed(2),
-                [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
-                [stockAttributes.DAY_LOW]: data.l,
-                [stockAttributes.DAY_HIGH]: data.h,
-                [stockAttributes.DAILY_GAIN_PERCENT]: data.dp,
-                [stockAttributes.PREVIOUS_DAY_CLOSE]: data.pc,
-                [stockAttributes.FIFTY_TWO_WEEK_HIGH]: data["52WeekHigh"],
-                [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: data["52WeekHighDate"],
-                [stockAttributes.FIFTY_TWO_WEEK_LOW]: data["52WeekLow"],
-                [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: data["52WeekLowDate"],
-              }
-            : stock
-        );
-  
-        setStocks(updatedStocks);
+        //const updatedStocks = stocks.map((stock) =>
+        //  stock[stockAttributes.STOCK_SYMBOL] === symbol
+        //    ? {
+        //        ...stock,
+        //        [stockAttributes.MARKET_PRICE]: data.c,
+        //        [stockAttributes.DAILY_GAIN]: data.d.toFixed(2),
+        //        [stockAttributes.OVERALL_GAIN]: (
+        //          (data.c - stock[stockAttributes.AVG_COST]) *
+        //          stock[stockAttributes.NO_OF_SHARES]
+        //        ).toFixed(2),
+        //        [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+        //        [stockAttributes.DAY_LOW]: data.l,
+        //        [stockAttributes.DAY_HIGH]: data.h,
+        //        [stockAttributes.DAILY_GAIN_PERCENT]: data.dp,
+        //        [stockAttributes.PREVIOUS_DAY_CLOSE]: data.pc,
+        //        //[stockAttributes.FIFTY_TWO_WEEK_HIGH]: data["52WeekHigh"],
+        //        //[stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: data["52WeekHighDate"],
+        //        //[stockAttributes.FIFTY_TWO_WEEK_LOW]: data["52WeekLow"],
+        //        //[stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: data["52WeekLowDate"],
+        //      }
+        //    : stock
+        //);
+        setStocks(prevStocks => prevStocks.map(stock => 
+          stock[stockAttributes.SYMBOL] === symbol 
+          ? { ...stock, [stockAttributes.MARKET_PRICE]: data.c, [stockAttributes.DAILY_GAIN]: data.d }
+          : stock
+        ));
+        debugger
+        //setStocks(updatedStocks);
       } else {
         console.log('Error fetching data', data);
       }
@@ -601,8 +606,15 @@ const MyPortfolio = () => {
   };
 
   const handleSymbolSelection = (symbol) => {
-    setNewStock({ ...newStock, [stockAttributes.STOCK_SYMBOL]: symbol });
-    setSymbolSuggestions([]);
+    const selectedSuggestion = symbolSuggestions.find((suggestion) => suggestion.symbol === symbol);
+    if (selectedSuggestion) {
+      setNewStock({
+        ...newStock,
+        [stockAttributes.STOCK_SYMBOL]: symbol,
+        [stockAttributes.STOCK_NAME]: selectedSuggestion.description,
+      });
+    }
+    setSymbolSuggestions([]); // Clear suggestions after selection
   };
 
   const totals = stocks.reduce(
@@ -730,7 +742,7 @@ const MyPortfolio = () => {
                                       onClick={() => handleSymbolSelection(symbol.symbol)}
                                       className="text-blue-500"
                                     >
-                                      {symbol.symbol}
+                                      {symbol.symbol} - {symbol.description}
                                     </button>
                                   </li>
                                 ))}
