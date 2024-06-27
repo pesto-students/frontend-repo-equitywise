@@ -97,37 +97,89 @@ const MyWishlist = () => {
   };
 
   const handleAddStock = async (e) => {
-    debugger;
     e.preventDefault();
     console.log('newStock for Wishlist:', newStock); // Log newStock to check its values
-
-    try {
-      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`, {
-        symbol: newStock[stockAttributes.STOCK_SYMBOL],
-        name: newStock[stockAttributes.STOCK_NAME],
-        shares: newStock[stockAttributes.NO_OF_SHARES],
-        purchasePrice: newStock[stockAttributes.AVG_COST]
-      });
-
-      console.log('Stocks Insert Response:', response.data);
-
-      if (response.data && response.data.stocks) {
+  
+    const existingStock = stocks.find(
+      (stock) => stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
+    );
+  
+    if (existingStock) {
+      // Stock already exists in the portfolio
+      const existingShares = existingStock[stockAttributes.NO_OF_SHARES];
+      const existingAvgCost = existingStock[stockAttributes.AVG_COST];
+      const newShares = newStock[stockAttributes.NO_OF_SHARES];
+      const newAvgCost = newStock[stockAttributes.AVG_COST];
+  
+      const totalShares = existingShares + newShares;
+      const combinedAvgCost =
+        (existingAvgCost * existingShares + newAvgCost * newShares) / totalShares;
+  
+      try {
+        const response = await axios.post(
+          `https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`,
+          {
+            symbol: newStock[stockAttributes.STOCK_SYMBOL],
+            name: newStock[stockAttributes.STOCK_NAME],
+            shares: totalShares,
+            purchasePrice: combinedAvgCost,
+          }
+        );
+  
+        console.log('Stock Update Response:', response.data);
+  
+        if (response.data && response.data.stocks) {
+          setStocks(
+            stocks.map((stock) =>
+              stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
+                ? {
+                    ...stock,
+                    [stockAttributes.NO_OF_SHARES]: totalShares,
+                    [stockAttributes.AVG_COST]: combinedAvgCost,
+                  }
+                : stock
+            )
+          );
+        }
+  
         fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+      } catch (error) {
+        console.log('Stock update error:', error.response ? error.response.data : error.message);
       }
-
-      setStocks([...stocks, newStock]);
-      setNewStock({
-        [stockAttributes.STOCK_NAME]: '',
-        [stockAttributes.STOCK_SYMBOL]: '',
-        [stockAttributes.NO_OF_SHARES]: 0,
-        [stockAttributes.AVG_COST]: 0,
-      });
-
-      setShowAddStockForm(false);
-    } catch (error) {
-      console.log('Stock insert error:', error.response ? error.response.data : error.message);
+    } else {
+      // Stock does not exist, add it as a new stock
+      try {
+        const response = await axios.post(
+          `https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`,
+          {
+            symbol: newStock[stockAttributes.STOCK_SYMBOL],
+            name: newStock[stockAttributes.STOCK_NAME],
+            shares: newStock[stockAttributes.NO_OF_SHARES],
+            purchasePrice: newStock[stockAttributes.AVG_COST],
+          }
+        );
+  
+        console.log('Stocks Insert Response:', response.data);
+  
+        if (response.data && response.data.stocks) {
+          fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+        }
+  
+        setStocks([...stocks, newStock]);
+        setNewStock({
+          [stockAttributes.STOCK_NAME]: '',
+          [stockAttributes.STOCK_SYMBOL]: '',
+          [stockAttributes.NO_OF_SHARES]: 0,
+          [stockAttributes.AVG_COST]: 0,
+        });
+  
+        setShowAddStockForm(false);
+      } catch (error) {
+        console.log('Stock insert error:', error.response ? error.response.data : error.message);
+      }
     }
   };
+  
 
   const handleDeleteStock = async (symbol) => {
     try {

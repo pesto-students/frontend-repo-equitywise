@@ -19,6 +19,7 @@ const MyPortfolio = () => {
   });
   const [showAddStockForm, setShowAddStockForm] = useState(false);
   const [symbolSuggestions, setSymbolSuggestions] = useState([]);
+  
   const apiKeyFinnhub = process.env.REACT_APP_FINNHUB_API_KEY;
 
   const displayColumns = displayTablesPortfolio[activeMenu] || [];
@@ -63,33 +64,54 @@ const MyPortfolio = () => {
 
   const fetchStockData = async (symbol) => {
     try {
-      const response = await axios.get(
+      const quoteResponse = await axios.get(
         `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
       );
-      const data = response.data;
+      const quoteData = quoteResponse.data;
+
+      const metricResponse = await axios.get(
+        `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${apiKeyFinnhub}`
+      );
+
+      const metricData = metricResponse.data.metric;
   debugger
-      if (data) {
-        console.log(`DATA for ${symbol}:`, data);
+      if (quoteData && metricData) {
+        console.log(`Quote DATA for ${symbol}:`, quoteData);
+        console.log(`Metric DATA for ${symbol}:`, metricData);
         debugger
         setStocks(prevStocks =>
           prevStocks.map(stock => 
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
-              ...stock, 
-              [stockAttributes.MARKET_PRICE]: data.c,
-              [stockAttributes.DAILY_GAIN]: data.d,
-              [stockAttributes.DAILY_GAIN_PERCENT]: data.dp.toFixed(2),
-              [stockAttributes.OVERALL_GAIN]: (
-                (data.c - stock[stockAttributes.AVG_COST]) *
-                stock[stockAttributes.NO_OF_SHARES]
-              ).toFixed(2),
-              [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+              ...stock,
+                              [stockAttributes.MARKET_PRICE]: quoteData.c,
+                              [stockAttributes.DAILY_GAIN]: (quoteData.c - quoteData.pc).toFixed(2),
+                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp.toFixed(2),
+                              [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
+                              [stockAttributes.DAY_LOW]: quoteData.l,
+                              [stockAttributes.DAY_HIGH]: quoteData.h,
+                              [stockAttributes.FIFTY_TWO_WEEK_HIGH]: metricData["52WeekHigh"],
+                              [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: metricData["52WeekHighDate"],
+                              [stockAttributes.FIFTY_TWO_WEEK_LOW]: metricData["52WeekLow"],
+                              [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: metricData["52WeekLowDate"],
+                              [stockAttributes.CR_ANNUAL]: metricData.currentRatioAnnual,
+                              [stockAttributes.PE_ANNUAL]: metricData.peAnnual,
+                              [stockAttributes.MARKET_CAP]: metricData.marketCapitalization,
+                              [stockAttributes.DIVIDEND_PER_SHARE_ANNUAL]: metricData.dividendPerShareAnnual,
+                              [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
+                              [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
+                              [stockAttributes.OVERALL_GAIN]: (
+                                  (quoteData.c - stock[stockAttributes.AVG_COST]) *
+                                  stock[stockAttributes.NO_OF_SHARES]
+                              ).toFixed(2),
+                              [stockAttributes.TOTAL_VALUE]: (quoteData.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                              // Add other metrics as needed
             }
             : stock
         )
       );
       } else {
-        console.log('Error fetching Portfolio data', data);
+        console.log('Error fetching quote or metric data');
       }
     } catch (error) {
       console.error('Error fetching Portfolio data:', error);
@@ -97,35 +119,86 @@ const MyPortfolio = () => {
   };
   
   const handleAddStock = async (e) => {
-    debugger;
     e.preventDefault();
     console.log('newStock for Portfolio:', newStock); // Log newStock to check its values
-
-    try {
-      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`, {
-        symbol: newStock[stockAttributes.STOCK_SYMBOL],
-        name: newStock[stockAttributes.STOCK_NAME],
-        shares: newStock[stockAttributes.NO_OF_SHARES],
-        purchasePrice: newStock[stockAttributes.AVG_COST]
-      });
-
-      console.log('Stocks Insert Response:', response.data);
-
-      if (response.data && response.data.stocks) {
+  
+    const existingStock = stocks.find(
+      (stock) => stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
+    );
+  
+    if (existingStock) {
+      // Stock already exists in the portfolio
+      const existingShares = existingStock[stockAttributes.NO_OF_SHARES];
+      const existingAvgCost = existingStock[stockAttributes.AVG_COST];
+      const newShares = newStock[stockAttributes.NO_OF_SHARES];
+      const newAvgCost = newStock[stockAttributes.AVG_COST];
+  
+      const totalShares = existingShares + newShares;
+      const combinedAvgCost =
+        (existingAvgCost * existingShares + newAvgCost * newShares) / totalShares;
+  
+      try {
+        const response = await axios.post(
+          `https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`,
+          {
+            symbol: newStock[stockAttributes.STOCK_SYMBOL],
+            name: newStock[stockAttributes.STOCK_NAME],
+            shares: totalShares,
+            purchasePrice: combinedAvgCost,
+          }
+        );
+  
+        console.log('Stock Update Response:', response.data);
+  
+        if (response.data && response.data.stocks) {
+          setStocks(
+            stocks.map((stock) =>
+              stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
+                ? {
+                    ...stock,
+                    [stockAttributes.NO_OF_SHARES]: totalShares,
+                    [stockAttributes.AVG_COST]: combinedAvgCost,
+                  }
+                : stock
+            )
+          );
+        }
+  
         fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+      } catch (error) {
+        console.log('Stock update error:', error.response ? error.response.data : error.message);
       }
-
-      setStocks([...stocks, newStock]);
-      setNewStock({
-        [stockAttributes.STOCK_NAME]: '',
-        [stockAttributes.STOCK_SYMBOL]: '',
-        [stockAttributes.NO_OF_SHARES]: 0,
-        [stockAttributes.AVG_COST]: 0,
-      });
-
-      setShowAddStockForm(false);
-    } catch (error) {
-      console.log('Stock insert error:', error.response ? error.response.data : error.message);
+    } else {
+      // Stock does not exist, add it as a new stock
+      try {
+        const response = await axios.post(
+          `https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`,
+          {
+            symbol: newStock[stockAttributes.STOCK_SYMBOL],
+            name: newStock[stockAttributes.STOCK_NAME],
+            shares: newStock[stockAttributes.NO_OF_SHARES],
+            purchasePrice: newStock[stockAttributes.AVG_COST],
+          }
+        );
+  
+        console.log('Stocks Insert Response:', response.data);
+  
+        if (response.data && response.data.stocks) {
+          fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
+        }
+  
+        setStocks([...stocks, newStock]);
+        setNewStock({
+          [stockAttributes.STOCK_NAME]: '',
+          [stockAttributes.STOCK_SYMBOL]: '',
+          [stockAttributes.NO_OF_SHARES]: 0,
+          [stockAttributes.AVG_COST]: 0,
+        });
+  
+        setShowAddStockForm(false);
+      } catch (error) {
+        console.log('Stock insert error:', error.response ? error.response.data : error.message);
+      }
     }
   };
 
@@ -257,7 +330,18 @@ const MyPortfolio = () => {
                   } ${val === stockAttributes.MARKET_PRICE ? 'text-right' : ''
                   } ${val === stockAttributes.DAILY_GAIN ? 'text-right' : ''
                   } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-right' : ''
+                  } ${val === stockAttributes.TOTAL_VALUE ?  'text-right' : ''
                   } ${val === stockAttributes.OVERALL_GAIN ? 'text-right' : ''
+                  } ${val === stockAttributes.PREVIOUS_DAY_CLOSE ? 'text-right' : ''
+                  } ${val === stockAttributes.DAY_OPEN ? 'text-right' : ''
+                  } ${val === stockAttributes.DAY_LOW ? 'text-right' : ''
+                  } ${val === stockAttributes.DAY_HIGH ? 'text-right' : ''
+                  } ${val === stockAttributes.MARKET_CAP ? 'text-right' : ''
+                  } ${val === stockAttributes.PE_ANNUAL ? 'text-right' : ''
+                  } ${val === stockAttributes.CR_ANNUAL ? 'text-right' : ''
+                  } ${val === stockAttributes.EBITDA_PER_SHARE_TTM ? 'text-right' : ''
+                  } ${val === stockAttributes.DIVIDEND_PER_SHARE_ANNUAL ? 'text-right' : ''
+                  } ${val === stockAttributes.DEBT_EQUITY ? 'text-right' : ''
                   }
                     `}
                 >
@@ -473,4 +557,3 @@ const MyPortfolio = () => {
 };
 
 export default MyPortfolio;
-                
