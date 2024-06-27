@@ -414,10 +414,10 @@ const MyPortfolio = () => {
               </thead>
               <tbody className="w-full">
                 <tr className="w-full">
-                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.MARKET_PRICE].toFixed(2)} </td>
-                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
-                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
-                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.MARKET_PRICE].toFixed(2)} </td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>
