@@ -36,8 +36,9 @@ const MyPortfolio = () => {
         console.log('Get Stocks Response for Portfolio:', response.data);
         
         if (response.data && response.data.stocks) {
+          toast.success('Portfolio Fetched Successfully')
           const fetchedStocks = response.data.stocks;
-          console.log('FStocks Fetched for Portfolio from db:', fetchedStocks);
+          console.log('Stocks Fetched for Portfolio from db:', fetchedStocks);
           setStocks(
             fetchedStocks.map(stock => ({
               [stockAttributes.STOCK_NAME]: stock.name,
@@ -155,6 +156,7 @@ const MyPortfolio = () => {
         console.log('Stock Update Response:', response.data);
   
         if (response.data && response.data.stocks) {
+          toast.success('Stock Edited Successfully')
           setStocks(
             stocks.map((stock) =>
               stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
@@ -188,6 +190,7 @@ const MyPortfolio = () => {
         console.log('Stocks Insert Response:', response.data);
   
         if (response.data && response.data.stocks) {
+          toast.success('Stock Inserted Successfully')
           fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
         }
   
@@ -213,7 +216,7 @@ const MyPortfolio = () => {
         console.log('Stock delete response:', response.data);
         debugger;
         if (response.data && response.status === 200) {
-          setStocks(stocks.filter(stock => stock.symbol !== symbol));
+          setStocks(stocks.filter((stock) => stock[stockAttributes.STOCK_SYMBOL] !== symbol));
           toast.success('Delete successful!');
         fetchStockData(symbol);
         } else {

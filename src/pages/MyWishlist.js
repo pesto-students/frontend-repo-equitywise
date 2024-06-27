@@ -4,6 +4,8 @@ import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesWishlist, stockAttributes } from '../Data/dataItems';
 import { FaEdit, FaTrashAlt, FaArrowUp, FaArrowDown, } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const backendGetWishlist = process.env.REACT_APP_BACKEND_GETWISHLIST_API_URL;
 
@@ -34,8 +36,9 @@ const MyWishlist = () => {
         console.log('Get Stocks Response for Wishlist:', response.data);
         debugger
         if (response.data && response.data.wishlists) {
+          toast.success('Wishlist Fetched Successfully')
           const fetchedStocks = response.data.wishlists;
-          console.log('FStocks Fetched for Wishlist from db:', fetchedStocks);
+          console.log('Stocks Fetched for Wishlist from db:', fetchedStocks);
           setStocks(
             fetchedStocks.map(stock => ({
               [stockAttributes.STOCK_NAME]: stock.name,
@@ -154,6 +157,7 @@ const MyWishlist = () => {
         console.log('Stock Update Response:', response.data);
   
         if (response.data && response.data.wishlists) {
+          toast.success('Stock Edited Successfully')
           setStocks(
             stocks.map((stock) =>
               stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
@@ -187,6 +191,7 @@ const MyWishlist = () => {
         console.log('Stocks Insert Response:', response.data);
   
         if (response.data && response.data.wishlists) {
+          toast.success('Stock Inserted Successfully')
           fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
         }
   
@@ -212,8 +217,8 @@ const MyWishlist = () => {
         console.log('Stock delete response:', response.data);
         debugger;
         if (response.data && response.status === 200) {
-          setStocks(stocks.filter(stock => stock.symbol !== symbol));
-          
+          setStocks(stocks.filter((stock) => stock[stockAttributes.STOCK_SYMBOL] !== symbol));
+          toast.success('Delete successful!');
         fetchStockData(symbol);
         } else {
           console.log('Failed to delete stock:', response.data);
@@ -308,6 +313,10 @@ const MyWishlist = () => {
   return (
     <div className="ml-4 mr-4">
       <SecondMenu activeMenu={activeMenu} setActiveMenu={setActiveMenu} menuType="wishlist" />
+      <ToastContainer
+        toastClassName={() => "bg-gray-800 text-white text-sm p-2 rounded-lg"}
+        bodyClassName={() => "text-sm"}
+      />
       <table className="w-full mb-4">
         <thead className="w-full">
           <tr className="w-full bg-slate-300">
