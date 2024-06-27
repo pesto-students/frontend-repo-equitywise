@@ -47,7 +47,7 @@ export const displayTablesPortfolio = {
     stockAttributes.AVG_COST,
     stockAttributes.MARKET_PRICE,
     stockAttributes.DAILY_GAIN,
-    //stockAttributes.DAILY_GAIN_PERCENT,
+    stockAttributes.DAILY_GAIN_PERCENT,
     stockAttributes.OVERALL_GAIN,
     stockAttributes.TOTAL_VALUE,
   ],

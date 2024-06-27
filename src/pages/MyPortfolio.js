@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesPortfolio, stockAttributes } from '../Data/dataItems';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaArrowUp, FaArrowDown, } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
 
 const backendGetPortfolio = process.env.REACT_APP_BACKEND_GETPORTFOLIO_API_URL;
@@ -88,6 +88,7 @@ const MyPortfolio = () => {
                               [stockAttributes.DAILY_GAIN]: (quoteData.c - quoteData.pc).toFixed(2),
                               [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp.toFixed(2),
                               [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
+                              [stockAttributes.DAY_OPEN]: quoteData.o,
                               [stockAttributes.DAY_LOW]: quoteData.l,
                               [stockAttributes.DAY_HIGH]: quoteData.h,
                               [stockAttributes.FIFTY_TWO_WEEK_HIGH]: metricData["52WeekHigh"],
@@ -325,26 +326,60 @@ const MyPortfolio = () => {
                   className={`h-8 pl-3 pr-3 ${
                     val === stockAttributes.STOCK_NAME ? 'text-left' : ''
                   } ${val === stockAttributes.STOCK_SYMBOL ? 'text-center' : ''
-                  } ${val === stockAttributes.NO_OF_SHARES ? 'text-right' : ''
-                  } ${val === stockAttributes.AVG_COST ? 'text-right' : ''
-                  } ${val === stockAttributes.MARKET_PRICE ? 'text-right' : ''
-                  } ${val === stockAttributes.DAILY_GAIN ? 'text-right' : ''
-                  } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-right' : ''
-                  } ${val === stockAttributes.TOTAL_VALUE ?  'text-right' : ''
-                  } ${val === stockAttributes.OVERALL_GAIN ? 'text-right' : ''
-                  } ${val === stockAttributes.PREVIOUS_DAY_CLOSE ? 'text-right' : ''
-                  } ${val === stockAttributes.DAY_OPEN ? 'text-right' : ''
-                  } ${val === stockAttributes.DAY_LOW ? 'text-right' : ''
-                  } ${val === stockAttributes.DAY_HIGH ? 'text-right' : ''
-                  } ${val === stockAttributes.MARKET_CAP ? 'text-right' : ''
-                  } ${val === stockAttributes.PE_ANNUAL ? 'text-right' : ''
-                  } ${val === stockAttributes.CR_ANNUAL ? 'text-right' : ''
-                  } ${val === stockAttributes.EBITDA_PER_SHARE_TTM ? 'text-right' : ''
-                  } ${val === stockAttributes.DIVIDEND_PER_SHARE_ANNUAL ? 'text-right' : ''
-                  } ${val === stockAttributes.DEBT_EQUITY ? 'text-right' : ''
+                  } ${val === stockAttributes.NO_OF_SHARES ? 'text-center' : ''
+                  } ${val === stockAttributes.AVG_COST ? 'text-center' : ''
+                  } ${val === stockAttributes.MARKET_PRICE ? 'text-center' : ''
+                  } ${val === stockAttributes.DAILY_GAIN ? 'text-center' : ''
+                  } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-center' : ''
+                  } ${val === stockAttributes.TOTAL_VALUE ?  'text-center' : ''
+                  } ${val === stockAttributes.OVERALL_GAIN ? 'text-center' : ''
+                  } ${val === stockAttributes.PREVIOUS_DAY_CLOSE ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_OPEN ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_LOW ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_HIGH ? 'text-center' : ''
+                  } ${val === stockAttributes.MARKET_CAP ? 'text-centert' : ''
+                  } ${val === stockAttributes.PE_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.CR_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.EBITDA_PER_SHARE_TTM ? 'text-center' : ''
+                  } ${val === stockAttributes.DIVIDEND_PER_SHARE_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.DEBT_EQUITY ? 'text-center' : ''
                   }
                     `}
                 >
+                  {/* Code Add Start */}
+                  {val === stockAttributes.DAILY_GAIN && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.DAILY_GAIN && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+
+        {val === stockAttributes.DAILY_GAIN_PERCENT && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.DAILY_GAIN_PERCENT && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+
+        {val === stockAttributes.OVERALL_GAIN && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.OVERALL_GAIN && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+                  {/* Code Add End */}
+
+
+                  
                   {scrip[val]}
                 </td>
                   ))}
@@ -371,15 +406,15 @@ const MyPortfolio = () => {
             <table className="w-full mb-4">
               <thead className="w-full">
                 <tr className="bg-slate-300">
-                  <th className="h-10 pl-4 pr-4 border text-center">Total Market Price</th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
                   <th className="h-10 pl-4 pr-4 border text-center">Total Daily Gain (%)</th>
-                  <th className="h-10 pl-4 pr-4 border text-center">Total Overall Gain</th>
-                  <th className="h-10 pl-4 pr-4 border text-center">Total Portfolio Value</th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Portfolio Value</div> <div className='text-xs'>($)</div></th>
                 </tr>
               </thead>
               <tbody className="w-full">
                 <tr className="w-full">
-                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.MARKET_PRICE].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.MARKET_PRICE].toFixed(2)} </td>
                   <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
