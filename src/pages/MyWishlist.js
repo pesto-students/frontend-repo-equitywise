@@ -29,11 +29,12 @@ const MyWishlist = () => {
   useEffect(() => {
     const fetchWishlistStocks = async () => {
       try {
-        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/GetWishlist?userId=${username}`);
+        debugger
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/getWishList?userId=${username}`);
         console.log('Get Stocks Response for Wishlist:', response.data);
-        
-        if (response.data && response.data.stocks) {
-          const fetchedStocks = response.data.stocks;
+        debugger
+        if (response.data && response.data.wishlists) {
+          const fetchedStocks = response.data.wishlists;
           console.log('FStocks Fetched for Wishlist from db:', fetchedStocks);
           setStocks(
             fetchedStocks.map(stock => ({
@@ -139,8 +140,9 @@ const MyWishlist = () => {
         (existingAvgCost * existingShares + newAvgCost * newShares) / totalShares;
   
       try {
+        debugger
         const response = await axios.post(
-          `https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`,
+          `https://backend-repo-equitywise.onrender.com/UpdateWishlistByUserid?userId=${username}`,
           {
             symbol: newStock[stockAttributes.STOCK_SYMBOL],
             name: newStock[stockAttributes.STOCK_NAME],
@@ -148,10 +150,10 @@ const MyWishlist = () => {
             purchasePrice: combinedAvgCost,
           }
         );
-  
+        debugger
         console.log('Stock Update Response:', response.data);
   
-        if (response.data && response.data.stocks) {
+        if (response.data && response.data.wishlists) {
           setStocks(
             stocks.map((stock) =>
               stock[stockAttributes.STOCK_SYMBOL] === newStock[stockAttributes.STOCK_SYMBOL]
@@ -173,7 +175,7 @@ const MyWishlist = () => {
       // Stock does not exist, add it as a new stock
       try {
         const response = await axios.post(
-          `https://backend-repo-equitywise.onrender.com/StockInsert?userId=${username}`,
+          `https://backend-repo-equitywise.onrender.com/WishlistInsert?userId=${username}`,
           {
             symbol: newStock[stockAttributes.STOCK_SYMBOL],
             name: newStock[stockAttributes.STOCK_NAME],
@@ -184,7 +186,7 @@ const MyWishlist = () => {
   
         console.log('Stocks Insert Response:', response.data);
   
-        if (response.data && response.data.stocks) {
+        if (response.data && response.data.wishlists) {
           fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
         }
   
@@ -206,7 +208,7 @@ const MyWishlist = () => {
   const handleDeleteStock = async (symbol) => {
     try {
       debugger
-        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/DeleteStockByStockName?userId=${username}&symbol=${symbol}`);
+        const response = await axios.post(`https://backend-repo-equitywise.onrender.com/DeleteWishListByStockName?userId=${username}&symbol=${symbol}`);
         console.log('Stock delete response:', response.data);
         debugger;
         if (response.data && response.status === 200) {
@@ -228,7 +230,7 @@ const MyWishlist = () => {
   const handleUpdateStock = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/UpdateStockByUserid?userId=${username}`, {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/UpdateWishlistByUserid?userId=${username}`, {
         symbol: editingStock[stockAttributes.STOCK_SYMBOL],
         name: editingStock[stockAttributes.STOCK_NAME],
         shares: editingStock[stockAttributes.NO_OF_SHARES],
@@ -237,7 +239,7 @@ const MyWishlist = () => {
 
       console.log('Stock Update Response:', response.data);
       debugger;
-      if (response.data && response.data.stocks) {
+      if (response.data && response.data.wishlists) {
         setStocks(stocks.map(stock => (stock[stockAttributes.STOCK_SYMBOL] === editingStock[stockAttributes.STOCK_SYMBOL] ? editingStock : stock)));
       }
       debugger;

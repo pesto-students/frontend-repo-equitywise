@@ -4,6 +4,9 @@ import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesPortfolio, stockAttributes } from '../Data/dataItems';
 import { FaEdit, FaTrashAlt, FaArrowUp, FaArrowDown, } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const backendGetPortfolio = process.env.REACT_APP_BACKEND_GETPORTFOLIO_API_URL;
 
@@ -211,7 +214,7 @@ const MyPortfolio = () => {
         debugger;
         if (response.data && response.status === 200) {
           setStocks(stocks.filter(stock => stock.symbol !== symbol));
-          
+          toast.success('Delete successful!');
         fetchStockData(symbol);
         } else {
           console.log('Failed to delete stock:', response.data);
@@ -306,6 +309,10 @@ const MyPortfolio = () => {
   return (
     <div className="ml-4 mr-4">
       <SecondMenu activeMenu={activeMenu} setActiveMenu={setActiveMenu} menuType="portfolio" />
+      <ToastContainer
+        toastClassName={() => "bg-gray-800 text-white text-sm p-2 rounded-lg"}
+        bodyClassName={() => "text-sm"}
+      />
       <table className="w-full mb-4">
         <thead className="w-full">
           <tr className="w-full bg-slate-300">
@@ -377,9 +384,6 @@ const MyPortfolio = () => {
           </span>
         ) : null}
                   {/* Code Add End */}
-
-
-                  
                   {scrip[val]}
                 </td>
                   ))}
