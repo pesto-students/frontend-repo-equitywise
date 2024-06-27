@@ -61,7 +61,7 @@ const MyWishlist = () => {
     
     const intervalId = setInterval(() => {
       stocks.forEach((stock) => fetchStockData(stock[stockAttributes.STOCK_SYMBOL]));
-    }, 300000); // Fetch data every 5 minutes
+    }, 60000); // Fetch data every 5 minutes
 
     return () => clearInterval(intervalId);
   }, []);
