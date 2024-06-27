@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesWishlist, stockAttributes } from '../Data/dataItems';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaArrowUp, FaArrowDown, } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
 
 const backendGetWishlist = process.env.REACT_APP_BACKEND_GETWISHLIST_API_URL;
@@ -12,13 +12,14 @@ const MyWishlist = () => {
   const [stocks, setStocks] = useState([]);
   const [editingStock, setEditingStock] = useState(null);
   const [newStock, setNewStock] = useState({
-    [stockAttributes.STOCK_NAME]: '',
     [stockAttributes.STOCK_SYMBOL]: '',
+    [stockAttributes.STOCK_NAME]: '',
     [stockAttributes.NO_OF_SHARES]: 0,
     [stockAttributes.AVG_COST]: 0,
   });
   const [showAddStockForm, setShowAddStockForm] = useState(false);
   const [symbolSuggestions, setSymbolSuggestions] = useState([]);
+  
   const apiKeyFinnhub = process.env.REACT_APP_FINNHUB_API_KEY;
 
   const displayColumns = displayTablesWishlist[activeMenu] || [];
@@ -30,20 +31,20 @@ const MyWishlist = () => {
       try {
         const response = await axios.post(`https://backend-repo-equitywise.onrender.com/GetWishlist?userId=${username}`);
         console.log('Get Stocks Response for Wishlist:', response.data);
-
+        
         if (response.data && response.data.stocks) {
           const fetchedStocks = response.data.stocks;
-          console.log('Stocks Fetched for Wishlist from db:', fetchedStocks);
+          console.log('FStocks Fetched for Wishlist from db:', fetchedStocks);
           setStocks(
-            fetchedStocks.map((stock) => ({
+            fetchedStocks.map(stock => ({
               [stockAttributes.STOCK_NAME]: stock.name,
               [stockAttributes.NO_OF_SHARES]: stock.shares,
               [stockAttributes.AVG_COST]: stock.purchasePrice,
               [stockAttributes.STOCK_SYMBOL]: stock.symbol,
-            }))
-          );
+          }))
+        );
 
-          fetchedStocks.forEach((stock) => fetchStockData(stock.symbol));
+          fetchedStocks.forEach(stock => fetchStockData(stock.symbol));
         }
 
         setShowAddStockForm(false);
@@ -53,7 +54,7 @@ const MyWishlist = () => {
     };
 
     fetchWishlistStocks();
-
+    
     const intervalId = setInterval(() => {
       stocks.forEach((stock) => fetchStockData(stock[stockAttributes.STOCK_SYMBOL]));
     }, 300000); // Fetch data every 5 minutes
@@ -63,39 +64,61 @@ const MyWishlist = () => {
 
   const fetchStockData = async (symbol) => {
     try {
-      const response = await fetch(
+      const quoteResponse = await axios.get(
         `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKeyFinnhub}`
       );
-      const data = await response.data;
-      
-      if (data) {
-        console.log(`DATA for ${symbol}:`, data);
+      const quoteData = quoteResponse.data;
 
+      const metricResponse = await axios.get(
+        `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${apiKeyFinnhub}`
+      );
+
+      const metricData = metricResponse.data.metric;
+  debugger
+      if (quoteData && metricData) {
+        console.log(`Quote DATA for ${symbol}:`, quoteData);
+        console.log(`Metric DATA for ${symbol}:`, metricData);
+        debugger
         setStocks(prevStocks =>
-          prevStocks.map((stock) =>
-            stock[stockAttributes.STOCK_SYMBOL] === symbol
-              ? {
-                  ...stock,
-                  [stockAttributes.MARKET_PRICE]: data.c,
-                  [stockAttributes.DAILY_GAIN]: data.d,
-                  [stockAttributes.DAILY_GAIN_PERCENT]: data.dp.toFixed(2),
-                  [stockAttributes.OVERALL_GAIN]: (
-                    (data.c - stock[stockAttributes.AVG_COST]) *
-                    stock[stockAttributes.NO_OF_SHARES]
-                  ).toFixed(2),
-                  [stockAttributes.TOTAL_VALUE]: (data.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
-                }
-              : stock
-          )
-        );
+          prevStocks.map(stock => 
+          stock[stockAttributes.STOCK_SYMBOL] === symbol 
+            ? {
+              ...stock,
+                              [stockAttributes.MARKET_PRICE]: quoteData.c,
+                              [stockAttributes.DAILY_GAIN]: (quoteData.c - quoteData.pc).toFixed(2),
+                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp.toFixed(2),
+                              [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
+                              [stockAttributes.DAY_OPEN]: quoteData.o,
+                              [stockAttributes.DAY_LOW]: quoteData.l,
+                              [stockAttributes.DAY_HIGH]: quoteData.h,
+                              [stockAttributes.FIFTY_TWO_WEEK_HIGH]: metricData["52WeekHigh"],
+                              [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: metricData["52WeekHighDate"],
+                              [stockAttributes.FIFTY_TWO_WEEK_LOW]: metricData["52WeekLow"],
+                              [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: metricData["52WeekLowDate"],
+                              [stockAttributes.CR_ANNUAL]: metricData.currentRatioAnnual,
+                              [stockAttributes.PE_ANNUAL]: metricData.peAnnual,
+                              [stockAttributes.MARKET_CAP]: metricData.marketCapitalization,
+                              [stockAttributes.DIVIDEND_PER_SHARE_ANNUAL]: metricData.dividendPerShareAnnual,
+                              [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
+                              [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
+                              [stockAttributes.OVERALL_GAIN]: (
+                                  (quoteData.c - stock[stockAttributes.AVG_COST]) *
+                                  stock[stockAttributes.NO_OF_SHARES]
+                              ).toFixed(2),
+                              [stockAttributes.TOTAL_VALUE]: (quoteData.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                              // Add other metrics as needed
+            }
+            : stock
+        )
+      );
       } else {
-        console.log('Error fetching Wishlist data', data);
+        console.log('Error fetching quote or metric data');
       }
     } catch (error) {
       console.error('Error fetching Wishlist data:', error);
     }
   };
-
+  
   const handleAddStock = async (e) => {
     e.preventDefault();
     console.log('newStock for Wishlist:', newStock); // Log newStock to check its values
@@ -105,7 +128,7 @@ const MyWishlist = () => {
     );
   
     if (existingStock) {
-      // Stock already exists in the portfolio
+      // Stock already exists in the wishlist
       const existingShares = existingStock[stockAttributes.NO_OF_SHARES];
       const existingAvgCost = existingStock[stockAttributes.AVG_COST];
       const newShares = newStock[stockAttributes.NO_OF_SHARES];
@@ -179,7 +202,6 @@ const MyWishlist = () => {
       }
     }
   };
-  
 
   const handleDeleteStock = async (symbol) => {
     try {
@@ -304,57 +326,102 @@ const MyWishlist = () => {
                   className={`h-8 pl-3 pr-3 ${
                     val === stockAttributes.STOCK_NAME ? 'text-left' : ''
                   } ${val === stockAttributes.STOCK_SYMBOL ? 'text-center' : ''
-                  } ${val === stockAttributes.NO_OF_SHARES ? 'text-right' : ''
-                  } ${val === stockAttributes.AVG_COST ? 'text-right' : ''
-                  } ${val === stockAttributes.MARKET_PRICE ? 'text-right' : ''
-                  } ${val === stockAttributes.DAILY_GAIN ? 'text-right' : ''
-                  } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-right' : ''
-                  } ${val === stockAttributes.OVERALL_GAIN ? 'text-right' : ''
+                  } ${val === stockAttributes.NO_OF_SHARES ? 'text-center' : ''
+                  } ${val === stockAttributes.AVG_COST ? 'text-center' : ''
+                  } ${val === stockAttributes.MARKET_PRICE ? 'text-center' : ''
+                  } ${val === stockAttributes.DAILY_GAIN ? 'text-center' : ''
+                  } ${val === stockAttributes.DAILY_GAIN_PERCENT ?  'text-center' : ''
+                  } ${val === stockAttributes.TOTAL_VALUE ?  'text-center' : ''
+                  } ${val === stockAttributes.OVERALL_GAIN ? 'text-center' : ''
+                  } ${val === stockAttributes.PREVIOUS_DAY_CLOSE ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_OPEN ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_LOW ? 'text-center' : ''
+                  } ${val === stockAttributes.DAY_HIGH ? 'text-center' : ''
+                  } ${val === stockAttributes.MARKET_CAP ? 'text-centert' : ''
+                  } ${val === stockAttributes.PE_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.CR_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.EBITDA_PER_SHARE_TTM ? 'text-center' : ''
+                  } ${val === stockAttributes.DIVIDEND_PER_SHARE_ANNUAL ? 'text-center' : ''
+                  } ${val === stockAttributes.DEBT_EQUITY ? 'text-center' : ''
                   }
                     `}
                 >
+                  {/* Code Add Start */}
+                  {val === stockAttributes.DAILY_GAIN && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.DAILY_GAIN && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+
+        {val === stockAttributes.DAILY_GAIN_PERCENT && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.DAILY_GAIN_PERCENT && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+
+        {val === stockAttributes.OVERALL_GAIN && parseFloat(scrip[val]) > 0 ? (
+          <span className="text-green-500 mr-1">
+            <FaArrowUp className="inline-block align-middle ml-1" />
+          </span>
+        ) : val === stockAttributes.OVERALL_GAIN && parseFloat(scrip[val]) < 0 ? (
+          <span className="text-red-500 mr-1">
+            <FaArrowDown className="inline-block align-middle ml-1" />
+          </span>
+        ) : null}
+                  {/* Code Add End */}
+
+
+                  
                   {scrip[val]}
                 </td>
+                  ))}
+                  <td className="h-8 pl-3 pr-3 text-center">
+                    <button
+                      onClick={() => handleEditStock(scrip)}
+                      className="mr-2 p-2 text-green-500 rounded"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteStock(scrip[stockAttributes.STOCK_SYMBOL])}
+                      className="p-2 text-red-500 rounded"
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </td>
+                </tr>
               ))}
-              <td className="h-8 pl-3 pr-3 text-center">
-                <button
-                  onClick={() => handleEditStock(scrip)}
-                  className="mr-2 p-2 text-green-500 rounded"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => handleDeleteStock(scrip[stockAttributes.STOCK_SYMBOL])}
-                  className="p-2 text-red-500 rounded"
-                >
-                  <FaTrashAlt />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="mb-4 p-4 bg-gray-100 rounded">
-        <h2 className="text-xl font-bold mb-2">Summary</h2>
-        <table className="w-full mb-4">
-          <thead className="w-full">
-            <tr className="bg-slate-300">
-              <th className="h-10 pl-4 pr-4 border text-center">Total Market Price</th>
-              <th className="h-10 pl-4 pr-4 border text-center">Total Daily Gain (%)</th>
-              <th className="h-10 pl-4 pr-4 border text-center">Total Overall Gain</th>
-              <th className="h-10 pl-4 pr-4 border text-center">Total Wishlist Value</th>
-            </tr>
-          </thead>
-          <tbody className="w-full">
-            <tr className="w-full">
-              <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.MARKET_PRICE].toFixed(2)}</td>
-              <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
-              <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
-              <td className="h-8 pl-3 pr-3 text-right">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+          <div className="mb-4 p-4 bg-gray-100 rounded">
+            <h2 className="text-xl font-bold mb-2">Summary</h2>
+            <table className="w-full mb-4">
+              <thead className="w-full">
+                <tr className="bg-slate-300">
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
+                  <th className="h-10 pl-4 pr-4 border text-center">Total Daily Gain (%)</th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Wishlist Value</div> <div className='text-xs'>($)</div></th>
+                </tr>
+              </thead>
+              <tbody className="w-full">
+                <tr className="w-full">
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.MARKET_PRICE].toFixed(2)} </td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
       <div className="mb-4">
         <button
@@ -363,97 +430,97 @@ const MyWishlist = () => {
         >
           {showAddStockForm ? 'Cancel Add Stock' : 'Add Stock'}
         </button>
-      </div>
+          </div>
 
       {showAddStockForm && (
         <form onSubmit={handleAddStock} className="mb-4">
-        <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
-          <label htmlFor="stock-symbol" className="mr-10" whitespace-nowrap>
-            Stock Symbol
-          </label>
-          <input
-            id="stock-symbol"
-            type="text"
-            placeholder="Stock Symbol"
-            value={newStock[stockAttributes.STOCK_SYMBOL]}
-            onChange={handleStockSymbolInputChange}
-            required
-            className="p-2 border rounded w-full"
-          />
-        </div>
-            {symbolSuggestions.length > 0 && (
-              <div className="mb-2">
-                <p>Suggestions:</p>
-                <ul>
-                  {symbolSuggestions.map((symbol, index) => (
-                    <li key={index}>
-                      <button
-                        type="button"
-                        onClick={() => handleSymbolSelection(symbol.symbol)}
-                        className="text-blue-500"
-                      >
-                        {symbol.symbol} - {symbol.description}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+          <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+            <label htmlFor="stock-symbol" className="mr-10" whitespace-nowrap>
+              Stock Symbol
+            </label>
+            <input
+              id="stock-symbol"
+              type="text"
+              placeholder="Stock Symbol"
+              value={newStock[stockAttributes.STOCK_SYMBOL]}
+              onChange={handleStockSymbolInputChange}
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>
+              {symbolSuggestions.length > 0 && (
+                <div className="mb-2">
+                  <p>Suggestions:</p>
+                  <ul>
+                    {symbolSuggestions.map((symbol, index) => (
+                      <li key={index}>
+                        <button
+                          type="button"
+                          onClick={() => handleSymbolSelection(symbol.symbol)}
+                          className="text-blue-500"
+                        >
+                          {symbol.symbol} - {symbol.description}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+                <label htmlFor="stock-name" className="mr-10">
+                  Stock Name
+                </label>
+                <input
+                  id="stock-name"
+                  type="text"
+                  placeholder="Stock Name"
+                  value={newStock[stockAttributes.STOCK_NAME]}
+                  onChange={(e) =>
+                    setNewStock({ ...newStock, [stockAttributes.STOCK_NAME]: e.target.value })
+                  }
+                  required
+                  className="p-2 border rounded w-full"
+                />
               </div>
-            )}
-            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
-              <label htmlFor="stock-name" className="mr-10">
-                Stock Name
-              </label>
-              <input
-                id="stock-name"
-                type="text"
-                placeholder="Stock Name"
-                value={newStock[stockAttributes.STOCK_NAME]}
-                onChange={(e) =>
-                  setNewStock({ ...newStock, [stockAttributes.STOCK_NAME]: e.target.value })
-                }
-                required
-                className="p-2 border rounded w-full"
-              />
-            </div>
-            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
-              <label htmlFor="no-of-shares" className="mr-8">
-                No. of Shares
-              </label>
-              <input
-                id="no-of-shares"
-                type="number"
-                placeholder="No. of Shares"
-                value={newStock[stockAttributes.NO_OF_SHARES]}
-                onChange={(e) =>
-                  setNewStock({ ...newStock, [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value) })
-                }
-                required
-                className="p-2 border rounded w-full"
-              />
-            </div>
-            <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
-              <label htmlFor="avg-cost" className="mr-8">
-                Average Cost
-              </label>
-              <input
-                id="avg-cost"
-                type="number"
-                placeholder="Average Cost"
-                value={newStock[stockAttributes.AVG_COST]}
-                onChange={(e) =>
-                  setNewStock({ ...newStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
-                }
-                required
-                className="p-2 border rounded w-full"
-              />
-            </div>
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-              Add Stock
-            </button>
-      </form>
+              <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+                <label htmlFor="no-of-shares" className="mr-8">
+                  No. of Shares
+                </label>
+                <input
+                  id="no-of-shares"
+                  type="number"
+                  placeholder="No. of Shares"
+                  value={newStock[stockAttributes.NO_OF_SHARES]}
+                  onChange={(e) =>
+                    setNewStock({ ...newStock, [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value) })
+                  }
+                  required
+                  className="p-2 border rounded w-full"
+                />
+              </div>
+              <div className="mb-2 flex items-center max-w-full md:max-w-lg lg:max-w-l">
+                <label htmlFor="avg-cost" className="mr-8">
+                  Average Cost
+                </label>
+                <input
+                  id="avg-cost"
+                  type="number"
+                  placeholder="Average Cost"
+                  value={newStock[stockAttributes.AVG_COST]}
+                  onChange={(e) =>
+                    setNewStock({ ...newStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
+                  }
+                  required
+                  className="p-2 border rounded w-full"
+                />
+              </div>
+              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
+                Add Stock
+              </button>
+        </form>
       )}
 
-{editingStock && (
+      {editingStock && (
         <form onSubmit={handleUpdateStock} className="mb-4">
           <div className="mb-2">
             <label htmlFor="edit-stock-symbol" className="block mb-1">
