@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/auth/callback"
+  to = "/MyPortfolio"
+  status = 200
+  force = true
