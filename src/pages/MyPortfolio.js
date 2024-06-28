@@ -85,9 +85,9 @@ const MyPortfolio = () => {
         debugger;
        console.log("market Price:" ,quoteData.c);
        console.log("daily gain: ",quoteData.pc);
-       const marketPrice = parseFloat(quoteData.c) || 0;
-      const dailygain = parseFloat(quoteData.pc) || 0;
-      const dailygainPercentage = parseFloat(quoteData.dp) || 0;
+       const marketPrice = parseFloat(quoteData.c).toFixed(2) || 0;
+      const dailygain = parseFloat(quoteData.pc).toFixed(2) || 0;
+      const dailygainPercentage = parseFloat(quoteData.dp).toFixed(2) || 0;
         setStocks(prevStocks =>
           prevStocks.map(stock => 
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
