@@ -15,6 +15,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showCnfirnPassword, setShowCnfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const onSuccess = (response) => {
@@ -132,7 +133,7 @@ debugger;
             </div>
             <div className="mb-4 relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showCnfirnPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 className="w-full p-2 border border-gray-300 rounded"
                 value={confirmPassword}
@@ -142,9 +143,9 @@ debugger;
               <button
                 type="button"
                 className="absolute right-2 top-2 text-gray-300"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowCnfirmPassword(!showCnfirnPassword)}
               >
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                <FontAwesomeIcon icon={showCnfirnPassword ? faEyeSlash : faEye} />
               </button>
             </div>
             <button onClick={handleEmailSignup} className="w-full bg-blue-500 text-white p-2 rounded mb-4">

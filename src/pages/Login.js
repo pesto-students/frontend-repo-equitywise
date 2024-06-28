@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useUser } from '../context/UserContext';
 import GoogleLoginComponent from '../Components/GoogleAuth';
-
+import validator from 'validator';
 const Login = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -17,7 +17,9 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); 
   const { setUsername } = useUser();
-
+  const validateEmail = (email) => {
+    return validator.isEmail(email);
+  };
   const onSuccess = (response) => {
     console.log('Login Success:', response);
     setUsername(email);
@@ -29,7 +31,16 @@ const Login = () => {
     console.log('Login Failed:', response);
     setErrorMessage('Login failed. Please try again.');
   };
-
+  const validatePassword = (password) => {
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const capitalLetterRegex = /[A-Z]/;
+    const numberRegex = /[0-9]/;
+    return (
+      specialCharRegex.test(password) &&
+      capitalLetterRegex.test(password) &&
+      numberRegex.test(password)
+    );
+  };
   const handleEmailLogin = () => {
     console.log('handleEmailLogin called');
 
@@ -38,7 +49,15 @@ const Login = () => {
       console.log('Email or password not entered');
       return;
     }
-
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address');
+      console.log('Invalid email address');
+      return;
+    }
+    if (!validatePassword(password)) {
+      setErrorMessage('Password must contain at least one special character, one capital letter, and one number');
+      return;
+    }
     console.log('Validation passed. Making API request...');
     axios.post('https://backend-repo-equitywise.onrender.com/login', {
       emailid: email,
