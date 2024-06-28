@@ -66,6 +66,7 @@ function GoogleLoginComponent(props) {
                 console.log('API error:', error);
                // onFailure(error);
               });
+              navigate('/MyPortfolio');
             }
             else{
               login(response.data);
@@ -74,13 +75,13 @@ function GoogleLoginComponent(props) {
       // Handle user information (e.g., store in state or context)
       setUsername(userInfo.data.email);
      
-       navigate('/MyPortfolio');
+      
     },
     onError: errorResponse => {
       console.error('Login Failed:', errorResponse);
     },
     ux_mode: 'redirect', // Ensure redirect mode
-    redirect_uri: 'https://equitywise.netlify.app/auth/google/callback'  // Ensure this matches your registered redirect URI
+    redirect_uri: 'https://equitywise.netlify.app/auth/google/MyPortfolio'  // Ensure this matches your registered redirect URI
   
    
   });
