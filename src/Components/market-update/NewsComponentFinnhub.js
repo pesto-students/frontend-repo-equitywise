@@ -49,7 +49,18 @@ const NewsComponentFinnhub = () => {
 
     getMarketNews();
   }, []);
+    const getCurrentDate = () => {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
 
+    // Set toDate state with the current date when component mounts
+    useState(() => {
+      setToDate(getCurrentDate());
+    }, []); //
   const handleSymbolChange = (e) => setSymbol(e.target.value);
   const handleFromDateChange = (e) => setFromDate(e.target.value);
   const handleToDateChange = (e) => setToDate(e.target.value);

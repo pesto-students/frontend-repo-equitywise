@@ -82,15 +82,20 @@ const MyPortfolio = () => {
       if (quoteData && metricData) {
         console.log(`Quote DATA for ${symbol}:`, quoteData);
         console.log(`Metric DATA for ${symbol}:`, metricData);
-        debugger
+        debugger;
+       console.log("market Price:" ,quoteData.c);
+       console.log("daily gain: ",quoteData.pc);
+       const marketPrice = parseFloat(quoteData.c) || 0;
+      const dailygain = parseFloat(quoteData.pc) || 0;
+      const dailygainPercentage = parseFloat(quoteData.dp) || 0;
         setStocks(prevStocks =>
           prevStocks.map(stock => 
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
               ...stock,
                               [stockAttributes.MARKET_PRICE]: quoteData.c,
-                              [stockAttributes.DAILY_GAIN]: (quoteData.c - quoteData.pc).toFixed(2),
-                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp.toFixed(2),
+                              [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain),
+                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp,
                               [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
                               [stockAttributes.DAY_OPEN]: quoteData.o,
                               [stockAttributes.DAY_LOW]: quoteData.l,
