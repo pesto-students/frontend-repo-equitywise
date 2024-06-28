@@ -79,8 +79,8 @@ function GoogleLoginComponent(props) {
     onError: errorResponse => {
       console.error('Login Failed:', errorResponse);
     },
-    // ux_mode: 'redirect', // Ensure redirect mode
-    // redirect_uri: 'https://equitywise.netlify.app/MyPortfolio' // Ensure this matches your registered redirect URI
+    ux_mode: 'redirect', // Ensure redirect mode
+    redirect_uri: 'https://equitywise.netlify.app/MyPortfolio' // Ensure this matches your registered redirect URI
   
    
   });
