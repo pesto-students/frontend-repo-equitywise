@@ -66,10 +66,11 @@ function GoogleLoginComponent(props) {
                 console.log('API error:', error);
                // onFailure(error);
               });
-               navigate('/MyPortfolio');
+               
             }
             else{
               login(response.data);
+              navigate('/MyPortfolio');
             }
           }
       // Handle user information (e.g., store in state or context)
