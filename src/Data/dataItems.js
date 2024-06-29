@@ -9,7 +9,7 @@ export const stockAttributes = {
   DAILY_GAIN: 'Daily Gain',
   DAILY_GAIN_PERCENT: 'Daily Gain %',
   OVERALL_GAIN: 'Overall Gain',
-  TOTAL_VALUE: 'Total Value',
+  TOTAL_VALUE: 'Total Gain',
   DAY_LOW: 'Day\'s Low',
   DAY_HIGH: 'Day\'s High',
   PREVIOUS_DAY_CLOSE: 'Prev Close',

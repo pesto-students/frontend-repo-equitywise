@@ -491,7 +491,7 @@ const MyPortfolio = () => {
             <table className="w-full mb-4">
               <thead className="w-full">
                 <tr className="bg-slate-300">
-                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Total Daily Gain</div> <div className='text-xs'>($)</div></th>
                   <th className="h-10 pl-4 pr-4 border text-center">Total Daily Gain (%)</th>
                   <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
                   <th className="h-10 pl-4 pr-4 border text-center"><div>Total Portfolio Value</div> <div className='text-xs'>($)</div></th>
