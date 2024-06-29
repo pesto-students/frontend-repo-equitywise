@@ -87,19 +87,27 @@ const MyPortfolio = () => {
         console.log(`Metric DATA for ${symbol}:`, metricData);
         debugger;
        console.log("market Price:" ,quoteData.c);
-       console.log("daily gain: ",quoteData.pc);
-       const marketPrice = parseFloat(quoteData.c).toFixed(2) || 0;
-      const dailygain = parseFloat(quoteData.pc).toFixed(2) || 0;
-      const dailygainPercentage = parseFloat(quoteData.dp).toFixed(2) || 0;
+       console.log("daily gain: ",quoteData.pc);       
+        const marketPrice = parseFloat(quoteData.c).toFixed(2) || 0;
+
+       const previousClose = parseFloat(quoteData.pc).toFixed(2) || 0;
+
+       const dailyGain = (quoteData.c - quoteData.pc).toFixed(2);
+
+       const dailyGainPercentage = quoteData.dp.toFixed(2) || 0;
+
         setStocks(prevStocks =>
           prevStocks.map(stock => 
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
               ...stock,
-                  [stockAttributes.MARKET_PRICE]: marketPrice,
-                  [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain).toFixed(2),
-                  [stockAttributes.DAILY_GAIN_PERCENT]: dailygainPercentage,
-                  [stockAttributes.PREVIOUS_DAY_CLOSE]: dailygain,
+              [stockAttributes.MARKET_PRICE]: marketPrice,
+
+              [stockAttributes.DAILY_GAIN]: dailyGain,
+
+              [stockAttributes.DAILY_GAIN_PERCENT]: dailyGainPercentage,
+
+              [stockAttributes.PREVIOUS_DAY_CLOSE]: previousClose,
                   [stockAttributes.DAY_OPEN]: quoteData.o,
                   [stockAttributes.DAY_LOW]: quoteData.l,
                   [stockAttributes.DAY_HIGH]: quoteData.h,
@@ -359,17 +367,23 @@ const MyPortfolio = () => {
 
   const totals = stocks.reduce(
     (acc, stock) => {
-      acc[stockAttributes.MARKET_PRICE] += parseFloat(stock[stockAttributes.MARKET_PRICE]) || 0;
-      acc[stockAttributes.DAILY_GAIN] += parseFloat(stock[stockAttributes.DAILY_GAIN]) || 0;
-      acc[stockAttributes.OVERALL_GAIN] += parseFloat(stock[stockAttributes.OVERALL_GAIN]) || 0;
-      acc[stockAttributes.TOTAL_VALUE] += parseFloat(stock[stockAttributes.TOTAL_VALUE]) || 0;
-      if(sellStockValue >0 )
-        {
-          acc[stockAttributes.SELL_PRICE] +=  parseFloat(sellStockValue) * stock[stockAttributes.NO_OF_SHARES]|| 0;
-        }
-        else{
-          acc[stockAttributes.SELL_PRICE] +=0;
-        }
+      const marketPrice = parseFloat(stock[stockAttributes.MARKET_PRICE]) || 0;
+
+      const noOfShares = parseInt(stock[stockAttributes.NO_OF_SHARES], 10) || 0;
+
+      const dailyGain = parseFloat(stock[stockAttributes.DAILY_GAIN]) || 0;
+
+      const overallGain = parseFloat(stock[stockAttributes.OVERALL_GAIN]) || 0;
+
+      const totalValue = parseFloat(stock[stockAttributes.TOTAL_VALUE]) || 0;
+
+      acc[stockAttributes.MARKET_PRICE] += marketPrice * noOfShares;
+
+      acc[stockAttributes.DAILY_GAIN] += dailyGain;
+
+      acc[stockAttributes.OVERALL_GAIN] += overallGain;
+
+      acc[stockAttributes.TOTAL_VALUE] += totalValue;
       return acc;
     },
     {
