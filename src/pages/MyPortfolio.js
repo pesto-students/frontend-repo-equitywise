@@ -46,7 +46,7 @@ const MyPortfolio = () => {
             fetchedStocks.map(stock => ({
               [stockAttributes.STOCK_NAME]: stock.name,
               [stockAttributes.NO_OF_SHARES]: stock.shares,
-              [stockAttributes.AVG_COST]: stock.purchasePrice,
+              [stockAttributes.AVG_COST]: stock.purchasePrice.toFixed(2),
               [stockAttributes.STOCK_SYMBOL]: stock.symbol,
           }))
         );
