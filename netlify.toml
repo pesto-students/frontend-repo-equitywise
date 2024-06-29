@@ -1,0 +1,19 @@
+[build]
+  publish = "build"
+
+[[redirects]]
+  from = "/auth/google/callback"
+  to = "/MyPortfolio"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Cross-Origin-Opener-Policy = "unsafe-none"
+    Cross-Origin-Embedder-Policy = "require-corp"
+
+# Optionally, you can have more specific headers for certain paths if needed.
