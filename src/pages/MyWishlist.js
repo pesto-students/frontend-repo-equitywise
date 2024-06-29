@@ -82,16 +82,19 @@ const MyWishlist = () => {
       if (quoteData && metricData) {
         console.log(`Quote DATA for ${symbol}:`, quoteData);
         console.log(`Metric DATA for ${symbol}:`, metricData);
-        debugger
+        const marketPrice = parseFloat(quoteData.c).toFixed(2) || 0;
+        const dailygain = parseFloat(quoteData.pc).toFixed(2) || 0;
+        const dailygainPercentage = parseFloat(quoteData.dp).toFixed(2) || 0;
+       
         setStocks(prevStocks =>
           prevStocks.map(stock => 
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
               ...stock,
-                              [stockAttributes.MARKET_PRICE]: quoteData.c,
-                              [stockAttributes.DAILY_GAIN]: (quoteData.c - quoteData.pc).toFixed(2),
-                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp.toFixed(2),
-                              [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
+                              [stockAttributes.MARKET_PRICE]: marketPrice,
+                              [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain).toFixed(2),
+                              [stockAttributes.DAILY_GAIN_PERCENT]:dailygainPercentage,
+                              [stockAttributes.PREVIOUS_DAY_CLOSE]: dailygain,
                               [stockAttributes.DAY_OPEN]: quoteData.o,
                               [stockAttributes.DAY_LOW]: quoteData.l,
                               [stockAttributes.DAY_HIGH]: quoteData.h,
@@ -106,10 +109,10 @@ const MyWishlist = () => {
                               [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
                               [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
                               [stockAttributes.OVERALL_GAIN]: (
-                                  (quoteData.c - stock[stockAttributes.AVG_COST]) *
+                                  (marketPrice - stock[stockAttributes.AVG_COST]) *
                                   stock[stockAttributes.NO_OF_SHARES]
                               ).toFixed(2),
-                              [stockAttributes.TOTAL_VALUE]: (quoteData.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                              [stockAttributes.TOTAL_VALUE]: (marketPrice * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
                               // Add other metrics as needed
             }
             : stock
@@ -140,7 +143,7 @@ const MyWishlist = () => {
   
       const totalShares = existingShares + newShares;
       const combinedAvgCost =
-        (existingAvgCost * existingShares + newAvgCost * newShares) / totalShares;
+        ((existingAvgCost * existingShares + newAvgCost * newShares) / totalShares).toFixed(2);
   
       try {
         debugger
@@ -170,7 +173,14 @@ const MyWishlist = () => {
             )
           );
         }
+        setNewStock({
+          [stockAttributes.STOCK_NAME]: '',
+          [stockAttributes.STOCK_SYMBOL]: '',
+          [stockAttributes.NO_OF_SHARES]: 0,
+          [stockAttributes.AVG_COST]: 0,
+        });
   
+        setShowAddStockForm(false);
         fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
       } catch (error) {
         console.log('Stock update error:', error.response ? error.response.data : error.message);
