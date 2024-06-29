@@ -16,6 +16,7 @@ const MyPortfolio = () => {
   const [stocks, setStocks] = useState([]);
   const [editingStock, setEditingStock] = useState(null);
   const [sellingStock, setSellingStock] = useState(null);
+  const [sellStockValue,setSellStockValue] = useState();
   const [newStock, setNewStock] = useState({
     [stockAttributes.STOCK_SYMBOL]: '',
     [stockAttributes.STOCK_NAME]: '',
@@ -289,8 +290,26 @@ const MyPortfolio = () => {
       console.log('Stock Update Response:', response.data);
       debugger;
       if (response.data && response.data.stocks) {
-        setStocks(stocks.map(stock => (stock[stockAttributes.STOCK_SYMBOL] === sellingStock[stockAttributes.STOCK_SYMBOL] ? sellingStock : stock)));
+        toast.success('Stock Sold Successfully')
+        setStocks(
+          stocks.map((stock) =>
+            stock[stockAttributes.STOCK_SYMBOL] === sellingStock[stockAttributes.STOCK_SYMBOL]
+              ? {
+                  ...stock,
+                  [stockAttributes.NO_OF_SHARES]: parseInt(stock[stockAttributes.NO_OF_SHARES], 10) - parseInt(sellingStock[stockAttributes.NO_OF_SHARES], 10),
+                }
+              : stock
+          )
+        );
       }
+      setSellStockValue(sellingStock[stockAttributes.SELL_PRICE]);
+      console.log("sell price value: ", sellStockValue);
+      setSellingStock({
+        [stockAttributes.STOCK_NAME]: '',
+        [stockAttributes.STOCK_SYMBOL]: '',
+        [stockAttributes.NO_OF_SHARES]: 0,
+        [stockAttributes.AVG_COST]: 0,
+      });
       debugger;
       fetchStockData(sellingStock.symbol);
       setSellingStock(null);
@@ -344,6 +363,13 @@ const MyPortfolio = () => {
       acc[stockAttributes.DAILY_GAIN] += parseFloat(stock[stockAttributes.DAILY_GAIN]) || 0;
       acc[stockAttributes.OVERALL_GAIN] += parseFloat(stock[stockAttributes.OVERALL_GAIN]) || 0;
       acc[stockAttributes.TOTAL_VALUE] += parseFloat(stock[stockAttributes.TOTAL_VALUE]) || 0;
+      if(sellStockValue >0 )
+        {
+          acc[stockAttributes.SELL_PRICE] +=  parseFloat(sellStockValue) * stock[stockAttributes.NO_OF_SHARES]|| 0;
+        }
+        else{
+          acc[stockAttributes.SELL_PRICE] +=0;
+        }
       return acc;
     },
     {
@@ -478,7 +504,7 @@ const MyPortfolio = () => {
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
-                  <td className="h-8 pl-3 pr-3 text-center">{(stockAttributes.SELL_PRICE*stockAttributes.NO_OF_SHARES).toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">Coming Soon</td>
                 </tr>
               </tbody>
             </table>
@@ -705,7 +731,7 @@ const MyPortfolio = () => {
               type="number"
               value={sellingStock[stockAttributes.SELL_PRICE]}
               onChange={(e) =>
-                setEditingStock({ ...sellingStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
+                setSellingStock({ ...sellingStock, [stockAttributes.SELL_PRICE]: parseFloat(e.target.value) })
               }
               required
               className="p-2 border rounded w-full"
