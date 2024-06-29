@@ -21,7 +21,7 @@ const Signup = () => {
   const onSuccess = (response) => {
     console.log('Signup Success:', response);
     login(response.data);
-    navigate('/MyPortfolio');
+    navigate('/Login');
   };
 
   const onFailure = (response) => {

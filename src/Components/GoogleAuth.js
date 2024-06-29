@@ -57,6 +57,8 @@ function GoogleLoginComponent(props) {
                 if (response.status === 201 || response.status === 200) {
                  // onSuccess(response);
                  login(response.data);
+                 
+                 navigate('/login');
                 } else {
                   //setErrorMessage('Invalid email or password');
                 }
@@ -70,6 +72,7 @@ function GoogleLoginComponent(props) {
             }
             else{
               login(response.data);
+              
               navigate('/MyPortfolio');
             }
           }

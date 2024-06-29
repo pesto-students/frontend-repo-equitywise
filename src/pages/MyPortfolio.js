@@ -93,10 +93,10 @@ const MyPortfolio = () => {
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
               ...stock,
-                              [stockAttributes.MARKET_PRICE]: quoteData.c,
-                              [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain),
-                              [stockAttributes.DAILY_GAIN_PERCENT]: quoteData.dp,
-                              [stockAttributes.PREVIOUS_DAY_CLOSE]: quoteData.pc,
+                              [stockAttributes.MARKET_PRICE]: marketPrice,
+                              [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain).toFixed(2),
+                              [stockAttributes.DAILY_GAIN_PERCENT]: dailygainPercentage,
+                              [stockAttributes.PREVIOUS_DAY_CLOSE]: dailygain,
                               [stockAttributes.DAY_OPEN]: quoteData.o,
                               [stockAttributes.DAY_LOW]: quoteData.l,
                               [stockAttributes.DAY_HIGH]: quoteData.h,
@@ -111,10 +111,10 @@ const MyPortfolio = () => {
                               [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
                               [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
                               [stockAttributes.OVERALL_GAIN]: (
-                                  (quoteData.c - stock[stockAttributes.AVG_COST]) *
+                                  (marketPrice - stock[stockAttributes.AVG_COST]) *
                                   stock[stockAttributes.NO_OF_SHARES]
                               ).toFixed(2),
-                              [stockAttributes.TOTAL_VALUE]: (quoteData.c * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                              [stockAttributes.TOTAL_VALUE]: (marketPrice * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
                               // Add other metrics as needed
             }
             : stock
@@ -145,7 +145,7 @@ const MyPortfolio = () => {
   
       const totalShares = existingShares + newShares;
       const combinedAvgCost =
-        (existingAvgCost * existingShares + newAvgCost * newShares) / totalShares;
+       ((existingAvgCost * existingShares + newAvgCost * newShares) / totalShares).toFixed(2);
   
       try {
         const response = await axios.post(
@@ -174,7 +174,14 @@ const MyPortfolio = () => {
             )
           );
         }
+        setNewStock({
+          [stockAttributes.STOCK_NAME]: '',
+          [stockAttributes.STOCK_SYMBOL]: '',
+          [stockAttributes.NO_OF_SHARES]: 0,
+          [stockAttributes.AVG_COST]: 0,
+        });
   
+        setShowAddStockForm(false);
         fetchStockData(newStock[stockAttributes.STOCK_SYMBOL]);
       } catch (error) {
         console.log('Stock update error:', error.response ? error.response.data : error.message);
