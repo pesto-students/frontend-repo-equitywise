@@ -3,6 +3,7 @@ import axios from 'axios';
 import SecondMenu from '../Components/SubMenu/SecondMenu';
 import { displayTablesPortfolio, stockAttributes } from '../Data/dataItems';
 import { FaEdit, FaTrashAlt, FaArrowUp, FaArrowDown, } from 'react-icons/fa';
+import { FaCircleDollarToSlot } from "react-icons/fa6";
 import { useUser } from '../context/UserContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +15,7 @@ const MyPortfolio = () => {
   const [activeMenu, setActiveMenu] = useState(Object.keys(displayTablesPortfolio)[0]);
   const [stocks, setStocks] = useState([]);
   const [editingStock, setEditingStock] = useState(null);
+  const [sellingStock, setSellingStock] = useState(null);
   const [newStock, setNewStock] = useState({
     [stockAttributes.STOCK_SYMBOL]: '',
     [stockAttributes.STOCK_NAME]: '',
@@ -93,29 +95,29 @@ const MyPortfolio = () => {
           stock[stockAttributes.STOCK_SYMBOL] === symbol 
             ? {
               ...stock,
-                              [stockAttributes.MARKET_PRICE]: marketPrice,
-                              [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain).toFixed(2),
-                              [stockAttributes.DAILY_GAIN_PERCENT]: dailygainPercentage,
-                              [stockAttributes.PREVIOUS_DAY_CLOSE]: dailygain,
-                              [stockAttributes.DAY_OPEN]: quoteData.o,
-                              [stockAttributes.DAY_LOW]: quoteData.l,
-                              [stockAttributes.DAY_HIGH]: quoteData.h,
-                              [stockAttributes.FIFTY_TWO_WEEK_HIGH]: metricData["52WeekHigh"],
-                              [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: metricData["52WeekHighDate"],
-                              [stockAttributes.FIFTY_TWO_WEEK_LOW]: metricData["52WeekLow"],
-                              [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: metricData["52WeekLowDate"],
-                              [stockAttributes.CR_ANNUAL]: metricData.currentRatioAnnual,
-                              [stockAttributes.PE_ANNUAL]: metricData.peAnnual,
-                              [stockAttributes.MARKET_CAP]: metricData.marketCapitalization,
-                              [stockAttributes.DIVIDEND_PER_SHARE_ANNUAL]: metricData.dividendPerShareAnnual,
-                              [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
-                              [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
-                              [stockAttributes.OVERALL_GAIN]: (
-                                  (marketPrice - stock[stockAttributes.AVG_COST]) *
-                                  stock[stockAttributes.NO_OF_SHARES]
-                              ).toFixed(2),
-                              [stockAttributes.TOTAL_VALUE]: (marketPrice * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
-                              // Add other metrics as needed
+                  [stockAttributes.MARKET_PRICE]: marketPrice,
+                  [stockAttributes.DAILY_GAIN]: (marketPrice - dailygain).toFixed(2),
+                  [stockAttributes.DAILY_GAIN_PERCENT]: dailygainPercentage,
+                  [stockAttributes.PREVIOUS_DAY_CLOSE]: dailygain,
+                  [stockAttributes.DAY_OPEN]: quoteData.o,
+                  [stockAttributes.DAY_LOW]: quoteData.l,
+                  [stockAttributes.DAY_HIGH]: quoteData.h,
+                  [stockAttributes.FIFTY_TWO_WEEK_HIGH]: metricData["52WeekHigh"],
+                  [stockAttributes.FIFTY_TWO_WEEK_HIGH_DATE]: metricData["52WeekHighDate"],
+                  [stockAttributes.FIFTY_TWO_WEEK_LOW]: metricData["52WeekLow"],
+                  [stockAttributes.FIFTY_TWO_WEEK_LOW_DATE]: metricData["52WeekLowDate"],
+                  [stockAttributes.CR_ANNUAL]: metricData.currentRatioAnnual,
+                  [stockAttributes.PE_ANNUAL]: metricData.peAnnual,
+                  [stockAttributes.MARKET_CAP]: metricData.marketCapitalization,
+                  [stockAttributes.DIVIDEND_PER_SHARE_ANNUAL]: metricData.dividendPerShareAnnual,
+                  [stockAttributes.EBITDA_PER_SHARE_TTM]: metricData.ebitdPerShareTTM,
+                  [stockAttributes.DEBT_EQUITY]: metricData["totalDebt/totalEquityAnnual"],
+                  [stockAttributes.OVERALL_GAIN]: (
+                      (marketPrice - stock[stockAttributes.AVG_COST]) *
+                      stock[stockAttributes.NO_OF_SHARES]
+                  ).toFixed(2),
+                  [stockAttributes.TOTAL_VALUE]: (marketPrice * stock[stockAttributes.NO_OF_SHARES]).toFixed(2),
+                  // Add other metrics as needed
             }
             : stock
         )
@@ -266,6 +268,37 @@ const MyPortfolio = () => {
     }
   };
 
+  const handleSellStock = (stockSymbol, stockPrice) => {
+    //setSellingStock([stockAttributes.STOCK_SYMBOL: stockSymbol, stockAttributes.SELL_PRICE: stockPrice]);
+    setSellingStock({
+      [stockAttributes.STOCK_SYMBOL]: stockSymbol,
+      [stockAttributes.NO_OF_SHARES]: 0,
+      [stockAttributes.SELL_PRICE]: stockPrice,
+    });
+  };
+  
+
+  const handleSellUpdateStock = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`https://backend-repo-equitywise.onrender.com/SellStockByUserid?userId=${username}`, {
+        symbol: sellingStock[stockAttributes.STOCK_SYMBOL],
+        shares: sellingStock[stockAttributes.NO_OF_SHARES],
+      });
+
+      console.log('Stock Update Response:', response.data);
+      debugger;
+      if (response.data && response.data.stocks) {
+        setStocks(stocks.map(stock => (stock[stockAttributes.STOCK_SYMBOL] === sellingStock[stockAttributes.STOCK_SYMBOL] ? sellingStock : stock)));
+      }
+      debugger;
+      fetchStockData(sellingStock.symbol);
+      setSellingStock(null);
+    } catch (error) {
+      console.log('Stock SELL update error:', error.response ? error.response.data : error.message);
+    }
+  };
+
   const handleStockSymbolInputChange = async (e) => {
     const userInput = e.target.value;
     console.log('User Input:', userInput);
@@ -365,6 +398,7 @@ const MyPortfolio = () => {
                   } ${val === stockAttributes.EBITDA_PER_SHARE_TTM ? 'text-center' : ''
                   } ${val === stockAttributes.DIVIDEND_PER_SHARE_ANNUAL ? 'text-center' : ''
                   } ${val === stockAttributes.DEBT_EQUITY ? 'text-center' : ''
+                  } ${val === stockAttributes.SELL_PRICE ? 'text-center' : ''
                   }
                     `}
                 >
@@ -405,7 +439,7 @@ const MyPortfolio = () => {
                   <td className="h-8 pl-3 pr-3 text-center">
                     <button
                       onClick={() => handleEditStock(scrip)}
-                      className="mr-2 p-2 text-green-500 rounded"
+                      className="mr-2 p-2 text-yellow-500 rounded"
                     >
                       <FaEdit />
                     </button>
@@ -414,6 +448,12 @@ const MyPortfolio = () => {
                       className="p-2 text-red-500 rounded"
                     >
                       <FaTrashAlt />
+                    </button>
+                    <button
+                      onClick={() => handleSellStock(scrip[stockAttributes.STOCK_SYMBOL], scrip[stockAttributes.MARKET_PRICE])}
+                      className="p-2 text-amber-600 rounded"
+                    >
+                      <FaCircleDollarToSlot />
                     </button>
                   </td>
                 </tr>
@@ -429,6 +469,7 @@ const MyPortfolio = () => {
                   <th className="h-10 pl-4 pr-4 border text-center">Total Daily Gain (%)</th>
                   <th className="h-10 pl-4 pr-4 border text-center"><div>Total Market Price</div> <div className='text-xs'>($)</div></th>
                   <th className="h-10 pl-4 pr-4 border text-center"><div>Total Portfolio Value</div> <div className='text-xs'>($)</div></th>
+                  <th className="h-10 pl-4 pr-4 border text-center"><div>Profit Booked</div> <div className='text-xs'>($)</div></th>
                 </tr>
               </thead>
               <tbody className="w-full">
@@ -437,6 +478,7 @@ const MyPortfolio = () => {
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.DAILY_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.OVERALL_GAIN].toFixed(2)}</td>
                   <td className="h-8 pl-3 pr-3 text-center">{totals[stockAttributes.TOTAL_VALUE].toFixed(2)}</td>
+                  <td className="h-8 pl-3 pr-3 text-center">{(stockAttributes.SELL_PRICE*stockAttributes.NO_OF_SHARES).toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>
@@ -603,6 +645,74 @@ const MyPortfolio = () => {
           </div>
           <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">
             Update Stock
+          </button>
+        </form>
+      )}
+
+{sellingStock && (
+        <form onSubmit={handleSellUpdateStock} className="mb-4">
+          <div className="mb-2">
+            <label htmlFor="sell-stock-symbol" className="block mb-1">
+              Stock Symbol
+            </label>
+            <input
+              id="sell-stock-symbol"
+              type="text"
+              value={sellingStock[stockAttributes.STOCK_SYMBOL]}
+              onChange={(e) =>
+                setSellingStock({ ...sellingStock, [stockAttributes.STOCK_SYMBOL]: e.target.value })
+              }
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>
+          {/*<div className="mb-2">
+            <label htmlFor="sell-stock-name" className="block mb-1">
+              Stock Name
+            </label>
+            <input
+              id="sell-stock-name"
+              type="text"
+              value={sellingStock[stockAttributes.STOCK_NAME]}
+              onChange={(e) =>
+                setSellingStock({ ...sellingStock, [stockAttributes.STOCK_NAME]: e.target.value })
+              }
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>*/}
+          <div className="mb-2">
+            <label htmlFor="sell-no-of-shares" className="block mb-1">
+              No. of Shares
+            </label>
+            <input
+              id="sell-no-of-shares"
+              type="number"
+              value={sellingStock[stockAttributes.NO_OF_SHARES]}
+              onChange={(e) =>
+                setSellingStock({ ...sellingStock, [stockAttributes.NO_OF_SHARES]: parseInt(e.target.value) })
+              }
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="sell-price" className="block mb-1">
+              Sell Price
+            </label>
+            <input
+              id="sell-price"
+              type="number"
+              value={sellingStock[stockAttributes.SELL_PRICE]}
+              onChange={(e) =>
+                setEditingStock({ ...sellingStock, [stockAttributes.AVG_COST]: parseFloat(e.target.value) })
+              }
+              required
+              className="p-2 border rounded w-full"
+            />
+          </div>
+          <button type="submit" className="bg-yellow-500 text-white px-4 py-2 rounded">
+            Sell Stock
           </button>
         </form>
       )}
